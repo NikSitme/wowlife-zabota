@@ -1122,7 +1122,7 @@ async function remoteSave(){
     if (!data || !data.length){
       // Кто-то сохранил раньше нас (наша версия устарела): берём то, что в базе, свою правку не накладываем
       setSync('error', 'Данные изменил кто-то другой — страница обновлена с сервера, повторите правку');
-      remoteVersion = 0;
+      remoteVersion = 0; savePending = false;
       await reloadFromRemote();
       return;
     }
