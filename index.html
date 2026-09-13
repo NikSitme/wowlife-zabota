@@ -1100,14 +1100,16 @@ function saveState(){
   if (stableJson(state) === lastSavedJson) return;
   clearTimeout(saveTimer);
   setSync('busy', 'Сохраняю…');
-  saveTimer = setTimeout(remoteSave, 400);
+  saveTimer = setTimeout(() => { saveTimer = null; remoteSave(); }, 400);
 }
+function saveInFlight(){ return !!(saveTimer || savePending); }
 async function remoteSave(){
-  if (savePending){ saveTimer = setTimeout(remoteSave, 400); return; }
+  if (savePending){ saveState(); return; }
   savePending = true;
   try {
     const snap = JSON.parse(JSON.stringify(state));
     const snapJson = stableJson(snap);
+    if (snapJson === lastSavedJson){ setSync('ok', 'Сохранено'); return; }
     const next = remoteVersion + 1;
     const { data, error } = await sb.from('payroll_state')
       .update({ state: snap, version: next, updated_at: new Date().toISOString() })
@@ -1135,6 +1137,9 @@ async function reloadFromRemote(){
 }
 function applyRemote(s, version){
   if (version <= remoteVersion) return;
+  // Пока наша правка ещё не ушла в базу, чужую версию не накладываем: наш update увидит
+  // устаревшую версию, отклонится, и пользователь получит явное сообщение вместо тихой потери правки
+  if (saveInFlight()) return;
   if (stableJson(s) === stableJson(state)){ remoteVersion = version; lastSavedJson = stableJson(s); return; } // наше же эхо
   const ae = document.activeElement;
   if (ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)){
