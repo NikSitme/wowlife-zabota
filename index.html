@@ -1123,33 +1123,40 @@ async function remoteSave(){
       // Кто-то сохранил раньше нас (наша версия устарела): берём то, что в базе, свою правку не накладываем
       setSync('error', 'Данные изменил кто-то другой — страница обновлена с сервера, повторите правку');
       remoteVersion = 0; savePending = false;
-      await reloadFromRemote();
+      await reloadFromRemote(true);
       return;
     }
     remoteVersion = next; lastSavedJson = snapJson; setSync('ok', 'Сохранено');
     if (stableJson(state) !== snapJson) saveState(); // пока сохраняли, что-то изменилось ещё
   } finally { savePending = false; }
 }
-async function reloadFromRemote(){
+async function reloadFromRemote(keepStatus){
   const { data, error } = await sb.from('payroll_state').select('state,version').eq('id', DOC_ID).maybeSingle();
   if (error || !data || !validState(data.state)) return;
-  applyRemote(data.state, data.version);
+  applyRemote(data.state, data.version, keepStatus);
 }
-function applyRemote(s, version){
+function isEditing(){ const ae = document.activeElement; return !!(ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)); }
+let pendingRemoteTimer = null;
+function applyRemote(s, version, keepStatus){
   if (version <= remoteVersion) return;
   // Пока наша правка ещё не ушла в базу, чужую версию не накладываем: наш update увидит
   // устаревшую версию, отклонится, и пользователь получит явное сообщение вместо тихой потери правки
   if (saveInFlight()) return;
   if (stableJson(s) === stableJson(state)){ remoteVersion = version; lastSavedJson = stableJson(s); return; } // наше же эхо
-  const ae = document.activeElement;
-  if (ae && /^(INPUT|SELECT|TEXTAREA)$/.test(ae.tagName)){
+  if (isEditing()){
+    // Пользователь сейчас что-то вводит: перерисовать позже, когда уйдёт из поля
     pendingRemote = { s, version };
-    ae.addEventListener('blur', () => { const p = pendingRemote; pendingRemote = null; if (p) applyRemote(p.s, p.version); }, { once:true });
+    if (!pendingRemoteTimer) pendingRemoteTimer = setInterval(() => {
+      if (isEditing() || saveInFlight()) return;
+      clearInterval(pendingRemoteTimer); pendingRemoteTimer = null;
+      const p = pendingRemote; pendingRemote = null;
+      if (p) applyRemote(p.s, p.version);
+    }, 500);
     return;
   }
   state = s; remoteVersion = version; lastSavedJson = stableJson(s); localSave();
   renderSchedule(); renderHistory(); renderStructure();
-  setSync('ok', 'Обновлено с сервера');
+  if (!keepStatus) setSync('ok', 'Обновлено с сервера');
 }
 function startRealtime(){
   if (!sb) return;
