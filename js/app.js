@@ -1,5 +1,5 @@
 // Точка входа: тема, вход, навигация, загрузка данных, realtime.
-import { sb, setSync, session, isAdmin, getSession, signIn, signOut, loadRole, loadHR, onHRChange, startHRRealtime, esc } from './db.js';
+import { sb, OPEN, setSync, session, isAdmin, getSession, signIn, signOut, loadRole, loadHR, onHRChange, startHRRealtime, esc } from './db.js';
 import { renderAll as renderPeople, refreshCard } from './people.js';
 import { renderSchedule } from './schedule.js';
 import { renderRegs, renderProcs } from './docs.js';
@@ -66,11 +66,12 @@ async function enter(){
   setSync('busy', 'Загружаю…');
   const role = await loadRole();
   if (!role){
-    await signOut();
+    if (!OPEN) await signOut();
     showAuth('Этому email не выдан доступ. Попросите администратора добавить вас в список.');
     return;
   }
-  document.getElementById('userBadge').textContent = `${session.user.email} · ${role === 'admin' ? 'администратор' : 'просмотр'}`;
+  document.getElementById('userBadge').textContent = OPEN ? 'открытый доступ, без входа' : `${session.user.email} · ${role === 'admin' ? 'администратор' : 'просмотр'}`;
+  document.getElementById('signOutBtn').hidden = OPEN;
   document.querySelector('#mainNav .nav-btn[data-page="payroll"]').hidden = !isAdmin();
   document.body.classList.toggle('is-admin', isAdmin());
   try { await loadHR(); }
@@ -86,6 +87,7 @@ onHRChange(renderPage);
 /* ---------- старт ---------- */
 (async () => {
   if (!sb){ showAuth('Подключение к базе не настроено: заполните config.js'); return; }
+  if (OPEN){ await enter(); return; }
   const user = await getSession();
   if (user) await enter(); else showAuth();
   sb.auth.onAuthStateChange((event) => { if (event === 'SIGNED_OUT'){ showAuth(); } });

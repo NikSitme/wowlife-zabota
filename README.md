@@ -27,9 +27,17 @@ supabase/003_seed_hr.sql черновик данных: отделы, сотру
 supabase/rollback.sql    откат реестра выплат к прошлой версии
 ```
 
+## Режим без входа (сейчас включён)
+
+В `config.js` стоит `openAccess: true`: экрана входа нет, любой, у кого есть ссылка, видит и правит всё,
+включая выплаты. Для этого в базе должен быть выполнен `supabase/004_open_access.sql`.
+Чтобы включить вход: создать пользователей и заполнить `allowed_users` (см. ниже), выполнить
+`supabase/005_close_access.sql`, поставить `openAccess: false` и запушить.
+
 ## Первичная настройка
 
-1. **База.** В Supabase → SQL Editor выполнить по очереди `schema.sql`, `002_hr.sql`, `003_seed_hr.sql`.
+1. **База.** В Supabase → SQL Editor выполнить по очереди `schema.sql`, `002_hr.sql`, `003_seed_hr.sql`,
+   и для режима без входа `004_open_access.sql`.
 2. **Ключи.** Project Settings → API Keys: Project URL и publishable key вписать в `config.js`.
    Секретный ключ (secret / service_role) в репозиторий не класть.
 3. **Первый администратор.**

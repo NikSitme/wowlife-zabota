@@ -1,6 +1,7 @@
 // Общий слой: клиент Supabase, вход, роль, кэш справочников управленки, realtime.
 
 const CFG = window.ZABOTA_CONFIG || {};
+export const OPEN = !!CFG.openAccess; // режим без входа
 export const sb = (CFG.url && CFG.anonKey && window.supabase)
   ? window.supabase.createClient(CFG.url, CFG.anonKey)
   : null;
@@ -49,6 +50,7 @@ export async function signOut(){ await sb.auth.signOut(); session.user = null; s
 
 // Роль читаем из allowed_users; если строки нет — доступа нет
 export async function loadRole(){
+  if (OPEN){ session.role = 'admin'; return 'admin'; }
   const { data, error } = await sb.from('allowed_users').select('role,employee_id').ilike('email', session.user.email).maybeSingle();
   if (error){ console.error('allowed_users', error); session.role = null; return null; }
   session.role = data ? data.role : null;
