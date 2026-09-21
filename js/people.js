@@ -13,7 +13,9 @@ export function renderOrg(){
   const wrap = document.getElementById('orgChart');
   const emps = activeEmployees();
   const roots = emps.filter(e => !e.manager_id || !empById(e.manager_id) || empById(e.manager_id).status === 'former');
-  const children = id => emps.filter(e => e.manager_id === id).sort((a, b) => (children0(b.id) - children0(a.id)) || ((deptById(a.department_id)?.sort ?? 99) - (deptById(b.department_id)?.sort ?? 99)) || (a.title || '').localeCompare(b.title || '', 'ru') || a.full_name.localeCompare(b.full_name, 'ru'));
+  const children = id => emps.filter(e => e.manager_id === id).sort((a, b) => (children0(b.id) - children0(a.id)) || (rank(a) - rank(b)) || ((deptById(a.department_id)?.sort ?? 99) - (deptById(b.department_id)?.sort ?? 99)) || (a.title || '').localeCompare(b.title || '', 'ru') || a.full_name.localeCompare(b.full_name, 'ru'));
+  // старшие смены — наверх, позиции без имени ниже людей, открытые вакансии — в самый низ
+  const rank = e => isVacancy(e) ? 3 : (isPlaceholder(e) ? 2 : (e.support_role === 'senior' ? 0 : 1));
   const children0 = id => emps.filter(e => e.manager_id === id).length;
   const countAll = id => { const k = emps.filter(e => e.manager_id === id); return k.length + k.reduce((n, x) => n + countAll(x.id), 0); };
 
@@ -192,20 +194,13 @@ function renderCard(){
         ${e.probation_end ? `<dt>Испытательный срок</dt><dd>до ${fmtDate(e.probation_end)}${e.probation_end < todayISO() ? ' · завершён' : ''}</dd>` : ''}
         <dt>Оформление</dt><dd>${e.contract_type ? CONTRACT_LABEL[e.contract_type] : '<span class="muted">не указано</span>'}</dd>
         <dt>Режим работы</dt><dd>${esc(e.work_mode || '—')}</dd>
+        ${e.birthday ? `<dt>День рождения</dt><dd>${fmtDate(e.birthday).replace(/ \d{4}$/, '')}</dd>` : ''}
         ${e.support_role ? `<dt>В поддержке</dt><dd>${e.support_role === 'senior' ? 'старший смены' : 'первая линия'}</dd>` : ''}
       </dl>
       <div class="p-sub">Документы</div>
       <dl class="kv">
         <dt>Договор ГПХ</dt><dd>${e.contract_type && e.contract_type !== 'ГПХ' ? '<span class="muted">не требуется</span>' : linkOrDash(e.gpx_link, 'Открыть договор')}</dd>
         <dt>Должностная инструкция</dt><dd>${linkOrDash(e.job_desc_link, 'Открыть документ')}</dd>
-      </dl>
-      <div class="p-sub">Контакты</div>
-      <dl class="kv">
-        <dt>Email</dt><dd>${e.email ? `<a href="mailto:${esc(e.email)}">${esc(e.email)}</a>` : '—'}</dd>
-        <dt>Телефон</dt><dd>${esc(e.phone || '—')}</dd>
-        <dt>Telegram</dt><dd>${e.telegram ? `<a href="https://t.me/${esc(e.telegram.replace('@', ''))}" target="_blank" rel="noopener">${esc(e.telegram)}</a>` : '—'}</dd>
-        <dt>День рождения</dt><dd>${e.birthday ? fmtDate(e.birthday) : '—'}</dd>
-        <dt>Город</dt><dd>${esc(e.city || '—')}</dd>
       </dl>
       ${e.notes ? `<div class="p-sub">Заметки</div><p class="note-text">${esc(e.notes)}</p>` : ''}`;
   } else if (openedTab === 'job'){
@@ -269,11 +264,7 @@ export function employeeForm(e){
       { key: 'job_purpose', label: 'Назначение должности', type: 'textarea', rows: 2, width: 'full' },
       { key: 'duties', label: 'Обязанности (по одной на строку)', type: 'lines', rows: 5, width: 'full' },
       { key: 'kpis', label: 'Показатели оценки (по одному на строку)', type: 'lines', rows: 3, width: 'full' },
-      { key: 'email', label: 'Email', type: 'email' },
-      { key: 'phone', label: 'Телефон', type: 'text' },
-      { key: 'telegram', label: 'Telegram', type: 'text' },
       { key: 'birthday', label: 'День рождения', type: 'date' },
-      { key: 'city', label: 'Город', type: 'text' },
       { key: 'notes', label: 'Заметки', type: 'textarea', rows: 2, width: 'full' },
     ],
     values: e || { status: 'active' },
