@@ -152,11 +152,6 @@ revoke select on public.payroll_schedule, public.payroll_month_status from anon;
 grant  select on public.payroll_schedule, public.payroll_month_status to authenticated;
 
 -- Realtime для новых таблиц
-alter publication supabase_realtime add table public.employees;
-alter publication supabase_realtime add table public.departments;
-alter publication supabase_realtime add table public.support_shifts;
-alter publication supabase_realtime add table public.regulations;
-alter publication supabase_realtime add table public.processes;
 
 -- Черновик данных управленки. Выполнить после 002_hr.sql. Всё правится дальше в интерфейсе.
 -- Подчинённость и отделы — предположение по реестру выплат и описанию службы поддержки;
