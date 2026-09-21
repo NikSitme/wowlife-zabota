@@ -7,25 +7,35 @@ let empFilters = { q: '', dept: 'all', status: 'active' };
 let openedId = null, openedTab = 'profile';
 
 /* ================= оргструктура ================= */
+const isPlaceholder = e => !e.full_name || e.full_name === e.title || /уточнить|вакансия/i.test(e.full_name);
 export function renderOrg(){
   const wrap = document.getElementById('orgChart');
   const emps = activeEmployees();
   const roots = emps.filter(e => !e.manager_id || !empById(e.manager_id) || empById(e.manager_id).status === 'former');
-  const children = id => emps.filter(e => e.manager_id === id).sort((a, b) => (deptById(a.department_id)?.sort ?? 99) - (deptById(b.department_id)?.sort ?? 99) || a.full_name.localeCompare(b.full_name));
-  const node = (e, depth) => {
+  const children = id => emps.filter(e => e.manager_id === id).sort((a, b) => (children0(b.id) - children0(a.id)) || ((deptById(a.department_id)?.sort ?? 99) - (deptById(b.department_id)?.sort ?? 99)) || (a.title || '').localeCompare(b.title || '', 'ru') || a.full_name.localeCompare(b.full_name, 'ru'));
+  const children0 = id => emps.filter(e => e.manager_id === id).length;
+  const countAll = id => { const k = emps.filter(e => e.manager_id === id); return k.length + k.reduce((n, x) => n + countAll(x.id), 0); };
+
+  // Карточка: должность — главная строка, имя — вторая. Позиция без имени — пунктиром.
+  const nodeHtml = (e, kind) => {
+    const ph = isPlaceholder(e), total = countAll(e.id);
+    return `<button class="org-node ${kind}${ph ? ' placeholder' : ''}" data-emp="${e.id}" style="--dept-color:${deptColor(e.department_id)}">
+      <span class="org-title">${esc(e.title || 'Должность не указана')}</span>
+      <span class="org-name">${ph ? 'имя не указано' : esc(e.full_name)}</span>
+      ${total ? `<span class="org-count">${total} в подчинении</span>` : ''}
+    </button>`;
+  };
+  // Ветка: если у всех подчинённых нет своих подчинённых — ставим их столбиком под руководителем
+  // (так схема всегда помещается по ширине); иначе — в ряд, каждый со своей веткой.
+  const branch = (e, kind) => {
     const kids = children(e.id);
-    const d = deptById(e.department_id);
-    return `<li>
-      <button class="org-node${kids.length ? ' has-kids' : ''}" data-emp="${e.id}" style="--dept-color:${deptColor(e.department_id)}">
-        <span class="org-name">${esc(e.short_name || e.full_name)}</span>
-        <span class="org-title">${esc(e.title || '')}</span>
-        <span class="org-dept">${esc(d ? d.name : '')}${kids.length ? ` · ${kids.length} в подчинении` : ''}</span>
-      </button>
-      ${kids.length ? `<ul>${kids.map(k => node(k, depth + 1)).join('')}</ul>` : ''}
-    </li>`;
+    if (!kids.length) return nodeHtml(e, kind);
+    const allLeaves = kids.every(k => !children0(k.id));
+    if (allLeaves) return `${nodeHtml(e, kind)}<div class="org-stack">${kids.map(k => nodeHtml(k, 'leaf')).join('')}</div>`;
+    return `${nodeHtml(e, kind)}<div class="org-row">${kids.map(k => `<div class="org-col">${branch(k, 'head')}</div>`).join('')}</div>`;
   };
   wrap.innerHTML = roots.length
-    ? `<div class="org-scroll"><ul class="org-tree">${roots.map(r => node(r, 0)).join('')}</ul></div>`
+    ? `<div class="org-scroll">${roots.map(r => `<div class="org">${branch(r, 'root')}</div>`).join('')}</div>`
     : '<div class="empty-state">Сотрудников пока нет</div>';
 
   // отделы
