@@ -1,5 +1,6 @@
 // «Сегодня»: сигналы, которые требуют внимания операционного директора. Только чтение, всё из уже имеющихся данных.
 import { HR, sb, esc, isAdmin, empById, empName, deptName, activeEmployees, fmtDate, todayISO, MONTHS_GEN, MONTHS_NOM } from './db.js';
+import { isPlaceholder, isVacancy } from './people.js';
 import { checkRules, shiftsOn, monthHasShifts, supportStaff, gotoMonth } from './schedule.js';
 
 const DAY = 86400000;
@@ -79,7 +80,7 @@ export async function renderToday(){
   }
 
   /* ---- 3. пробелы в данных о людях ---- */
-  const act = HR.employees.filter(e => e.status === 'active');
+  const act = HR.employees.filter(e => e.status === 'active' && !isPlaceholder(e)); // вакансии и позиции без имени не считаем
   const gaps = [
     ['нет даты выхода', e => !e.hired_at],
     ['не указано оформление', e => !e.contract_type],

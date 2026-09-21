@@ -7,7 +7,8 @@ let empFilters = { q: '', dept: 'all', status: 'active' };
 let openedId = null, openedTab = 'profile';
 
 /* ================= оргструктура ================= */
-const isPlaceholder = e => !e.full_name || e.full_name === e.title || /уточнить|вакансия/i.test(e.full_name);
+export const isVacancy = e => /вакансия/i.test(e.full_name || '');
+export const isPlaceholder = e => !e.full_name || e.full_name === e.title || /уточнить/i.test(e.full_name) || isVacancy(e);
 export function renderOrg(){
   const wrap = document.getElementById('orgChart');
   const emps = activeEmployees();
@@ -21,7 +22,7 @@ export function renderOrg(){
     const ph = isPlaceholder(e), total = countAll(e.id);
     return `<button class="org-node ${kind}${ph ? ' placeholder' : ''}" data-emp="${e.id}" style="--dept-color:${deptColor(e.department_id)}">
       <span class="org-title">${esc(e.title || 'Должность не указана')}</span>
-      <span class="org-name">${ph ? 'имя не указано' : esc(e.full_name)}</span>
+      <span class="org-name">${isVacancy(e) ? 'вакансия открыта' : (ph ? 'имя не указано' : esc(e.full_name))}</span>
       ${total ? `<span class="org-count">${total} в подчинении</span>` : ''}
     </button>`;
   };
@@ -112,12 +113,13 @@ export function renderEmployees(){
   }).sort((a, b) => (deptById(a.department_id)?.sort ?? 99) - (deptById(b.department_id)?.sort ?? 99) || a.full_name.localeCompare(b.full_name));
 
   const stats = document.getElementById('empStats');
-  const act = HR.employees.filter(e => e.status === 'active');
+  const act = HR.employees.filter(e => e.status === 'active' && !isPlaceholder(e));
+  const vacancies = HR.employees.filter(e => e.status === 'active' && isVacancy(e)).length;
   const withDate = act.filter(e => e.hired_at);
   const avgMonths = withDate.length ? Math.round(withDate.reduce((s, e) => s + monthsSince(e.hired_at), 0) / withDate.length) : null;
   const noDocs = act.filter(e => e.contract_type === 'ГПХ' && !e.gpx_link).length;
   stats.innerHTML = [
-    ['В штате', act.length, `${HR.departments.length} отделов`],
+    ['В штате', act.length, vacancies ? `открытых вакансий: ${vacancies}` : `${HR.departments.length} отделов`],
     ['Средний стаж', avgMonths === null ? '—' : fmtMonths(avgMonths), withDate.length < act.length ? `дата выхода не указана у ${act.length - withDate.length}` : 'по всем'],
     ['Без должностной инструкции', act.filter(e => !e.job_desc_link && !e.job_purpose && !(e.duties || []).length).length, 'ни ссылки, ни текста'],
     ['ГПХ без договора', noDocs, 'ссылка на договор не указана'],
@@ -128,7 +130,7 @@ export function renderEmployees(){
   list.innerHTML = `<div class="table-scroll"><table class="data-table emp-table">
     <thead><tr><th>Сотрудник</th><th>Отдел</th><th>Руководитель</th><th>В компании с</th><th>Стаж</th><th>Оформление</th><th>Режим</th><th>Документы</th></tr></thead>
     <tbody>${rows.map(e => `<tr data-emp="${e.id}" tabindex="0">
-      <td><div class="emp-name">${esc(e.full_name)}${e.status !== 'active' ? ' ' + pill(STATUS_LABEL[e.status], e.status === 'former' ? 'gray' : 'warn') : ''}</div><div class="muted small">${esc(e.title || '')}</div></td>
+      <td><div class="emp-name">${isVacancy(e) ? pill('вакансия', 'warn') : esc(e.full_name)}${e.status !== 'active' ? ' ' + pill(STATUS_LABEL[e.status], e.status === 'former' ? 'gray' : 'warn') : ''}</div><div class="muted small">${esc(e.title || '')}</div></td>
       <td class="txt"><span class="dept-dot" style="background:${deptColor(e.department_id)}"></span>${esc(deptName(e.department_id))}</td>
       <td class="txt">${esc(empName(e.manager_id))}</td>
       <td class="txt">${e.hired_at ? fmtDate(e.hired_at) : '<span class="muted">—</span>'}</td>
