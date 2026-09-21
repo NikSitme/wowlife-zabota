@@ -104,7 +104,7 @@ export async function renderToday(){
     if (e.birthday){ const n = nextOccurrence(e.birthday); const diff = Math.round((n - t0) / DAY); if (diff <= 14) events.push({ diff, html: empLink(e.id, `день рождения ${diff === 0 ? 'сегодня' : `${n.getDate()} ${MONTHS_GEN[n.getMonth()]}`}`) }); }
     if (e.hired_at){
       const h = parse(e.hired_at);
-      const probEnd = new Date(h.getFullYear(), h.getMonth() + 3, h.getDate()); const pd = Math.round((probEnd - t0) / DAY);
+      const probEnd = e.probation_end ? parse(e.probation_end) : new Date(h.getFullYear(), h.getMonth() + 3, h.getDate()); const pd = Math.round((probEnd - t0) / DAY);
       if (pd >= 0 && pd <= 30) events.push({ diff: pd, html: empLink(e.id, `конец испытательного срока ${probEnd.getDate()} ${MONTHS_GEN[probEnd.getMonth()]}`) });
       const n = nextOccurrence(e.hired_at); const diff = Math.round((n - t0) / DAY); const years = n.getFullYear() - h.getFullYear();
       if (diff <= 30 && years >= 1) events.push({ diff, html: empLink(e.id, `${years} ${plural(years, 'год', 'года', 'лет')} в компании ${n.getDate()} ${MONTHS_GEN[n.getMonth()]}`) });

@@ -72,6 +72,14 @@
 .org-col:last-child::after{right:50%;}
 .org-col:only-child::after{display:none;}
 
+/* руководитель нескольких отделов: его ветка шире и делится на подветки по отделам */
+.org-col.wide{flex:2 1 0; min-width:470px; max-width:720px;}
+.org-col.sub{min-width:200px; max-width:none;}
+.org-node.group{cursor:default; box-shadow:none; background:color-mix(in srgb, var(--dept-color, var(--accent)) 10%, var(--surface)); border-left-width:1px; border-top:3px solid var(--dept-color, var(--accent)); padding:7px 12px; flex-direction:row; align-items:baseline; justify-content:space-between; gap:10px; align-self:stretch;}
+.org-node.group:hover{transform:none; border-color:var(--line-strong); border-top-color:var(--dept-color, var(--accent));}
+.org-node.group .org-title{font-size:12px; text-transform:uppercase; letter-spacing:.06em;}
+.org-node.group .org-name{font-size:12px; font-family:var(--font-mono);}
+
 /* столбик подчинённых под руководителем */
 .org-stack{position:relative; display:flex; flex-direction:column; gap:8px; padding:12px 0 0 26px; align-self:stretch;}
 .org > .org-stack{align-self:center; min-width:280px;}

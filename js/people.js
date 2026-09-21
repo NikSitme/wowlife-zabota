@@ -28,12 +28,26 @@ export function renderOrg(){
   };
   // Ветка: если у всех подчинённых нет своих подчинённых — ставим их столбиком под руководителем
   // (так схема всегда помещается по ширине); иначе — в ряд, каждый со своей веткой.
+  // Руководитель нескольких отделов (например, РОП: продажи и активации) — его люди делятся на ветки по отделам.
+  const splitGroups = e => {
+    const kids = children(e.id);
+    if (!kids.length || !kids.every(k => !children0(k.id))) return null;
+    const headed = HR.departments.filter(d => d.head_id === e.id).sort((a, b) => a.sort - b.sort);
+    if (headed.length < 2) return null;
+    const groups = headed.map(d => ({ id: d.id, name: d.name, kids: kids.filter(k => k.department_id === d.id) })).filter(g => g.kids.length);
+    const rest = kids.filter(k => !headed.some(d => d.id === k.department_id));
+    if (rest.length) groups.push({ id: null, name: 'Другие', kids: rest });
+    return groups.length >= 2 ? groups : null;
+  };
+  const groupHtml = g => `<div class="org-node group" style="--dept-color:${deptColor(g.id)}"><span class="org-title">${esc(g.name)}</span><span class="org-name">${g.kids.length} чел.</span></div>`;
   const branch = (e, kind) => {
     const kids = children(e.id);
     if (!kids.length) return nodeHtml(e, kind);
+    const groups = splitGroups(e);
+    if (groups) return `${nodeHtml(e, kind)}<div class="org-row">${groups.map(g => `<div class="org-col sub">${groupHtml(g)}<div class="org-stack">${g.kids.map(k => nodeHtml(k, 'leaf')).join('')}</div></div>`).join('')}</div>`;
     const allLeaves = kids.every(k => !children0(k.id));
     if (allLeaves) return `${nodeHtml(e, kind)}<div class="org-stack">${kids.map(k => nodeHtml(k, 'leaf')).join('')}</div>`;
-    return `${nodeHtml(e, kind)}<div class="org-row">${kids.map(k => `<div class="org-col">${branch(k, 'head')}</div>`).join('')}</div>`;
+    return `${nodeHtml(e, kind)}<div class="org-row">${kids.map(k => `<div class="org-col${splitGroups(k) ? ' wide' : ''}">${branch(k, 'head')}</div>`).join('')}</div>`;
   };
   wrap.innerHTML = roots.length
     ? `<div class="org-scroll">${roots.map(r => `<div class="org">${branch(r, 'root')}</div>`).join('')}</div>`
@@ -175,6 +189,7 @@ function renderCard(){
         <dt>Дата выхода</dt><dd>${e.hired_at ? fmtDate(e.hired_at) : '<span class="muted">не указана</span>'}</dd>
         ${e.left_at ? `<dt>Дата ухода</dt><dd>${fmtDate(e.left_at)}</dd>` : ''}
         <dt>Стаж</dt><dd>${e.hired_at ? tenure(e.hired_at, e.left_at) : '—'}</dd>
+        ${e.probation_end ? `<dt>Испытательный срок</dt><dd>до ${fmtDate(e.probation_end)}${e.probation_end < todayISO() ? ' · завершён' : ''}</dd>` : ''}
         <dt>Оформление</dt><dd>${e.contract_type ? CONTRACT_LABEL[e.contract_type] : '<span class="muted">не указано</span>'}</dd>
         <dt>Режим работы</dt><dd>${esc(e.work_mode || '—')}</dd>
         ${e.support_role ? `<dt>В поддержке</dt><dd>${e.support_role === 'senior' ? 'старший смены' : 'первая линия'}</dd>` : ''}
@@ -246,6 +261,7 @@ export function employeeForm(e){
       { key: 'contract_type', label: 'Оформление', type: 'select', options: Object.entries(CONTRACT_LABEL).map(([v, l]) => ({ value: v, label: l })) },
       { key: 'hired_at', label: 'Дата выхода', type: 'date' },
       { key: 'left_at', label: 'Дата ухода', type: 'date' },
+      ...(HR.employees.length && 'probation_end' in HR.employees[0] ? [{ key: 'probation_end', label: 'Испытательный срок до', type: 'date' }] : []),
       { key: 'work_mode', label: 'Режим работы', type: 'text', placeholder: '5/2, 10:00–19:00, офис' },
       { key: 'support_role', label: 'Роль в поддержке', type: 'select', options: [{ value: 'line', label: 'Первая линия' }, { value: 'senior', label: 'Старший смены' }] },
       { key: 'gpx_link', label: 'Ссылка на договор ГПХ (Google Drive)', type: 'url', width: 'full' },
