@@ -55,11 +55,12 @@
       <span class="brand-mark">W</span>
       <div>
         <h1>WOWlife управленка</h1>
-        <p><span id="userBadge"></span> · <button class="link-btn" id="signOutBtn" type="button">выйти</button></p>
+        <p><span id="userBadge"></span><span id="signOutWrap"> · <button class="link-btn" id="signOutBtn" type="button">выйти</button></span></p>
       </div>
     </div>
     <nav class="tabs" id="mainNav">
-      <button class="tab-btn nav-btn active" data-page="org">Оргструктура</button>
+      <button class="tab-btn nav-btn active" data-page="today">Сегодня</button>
+      <button class="tab-btn nav-btn" data-page="org">Оргструктура</button>
       <button class="tab-btn nav-btn" data-page="people">Сотрудники</button>
       <button class="tab-btn nav-btn" data-page="schedule">График</button>
       <button class="tab-btn nav-btn" data-page="regs">Регламенты</button>
@@ -70,8 +71,14 @@
   </header>
 
   <main>
+    <!-- Сегодня -->
+    <section class="page active" data-page="today">
+      <div class="today-head"><h2 id="todayTitle"></h2><p class="muted" id="todaySub"></p></div>
+      <div class="signal-grid" id="todaySignals"></div>
+    </section>
+
     <!-- Оргструктура -->
-    <section class="page active" data-page="org">
+    <section class="page" data-page="org">
       <p class="help-note">Схема подчинения строится по полю «Руководитель» в карточке сотрудника. Клик по человеку открывает карточку.</p>
       <div id="orgChart"></div>
       <h2 class="sec-title">Отделы</h2>
@@ -302,6 +309,7 @@
       <div class="guide-section">
         <h2><span class="step-num">1</span>Что где</h2>
         <div class="guide-grid">
+          <div class="guide-card"><h3>Сегодня</h3><p>Стартовая страница: что требует внимания. Выплаты на неделю и просрочка, кто на смене и нарушения графика, пробелы в карточках сотрудников, ближайшие даты, отделы без описанных процессов. Каждый пункт кликабелен.</p></div>
           <div class="guide-card"><h3>Оргструктура</h3><p>Дерево подчинения и список отделов. Меняется через поле «Руководитель» и «Отдел» в карточке сотрудника; отделы правит администратор кнопкой ✎.</p></div>
           <div class="guide-card"><h3>Сотрудники</h3><p>Все актуальные люди с датой выхода, стажем, оформлением и ссылками на договор ГПХ и должностную инструкцию. Клик по строке открывает карточку с вкладками: профиль, инструкция, регламенты, процессы.</p></div>
           <div class="guide-card"><h3>График</h3><p>Календарь смен поддержки с проверкой правил. Администратор ставит смены кликом по клетке или генерирует месяц по правилу. У остальных сотрудников показан режим работы из карточки.</p></div>

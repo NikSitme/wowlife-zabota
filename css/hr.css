@@ -196,3 +196,29 @@
   .kv{grid-template-columns:1fr;}
   .kv dd{text-align:left;}
 }
+
+/* ---------- «Сегодня» ---------- */
+.today-head{margin:4px 0 20px;}
+.today-head h2{font-family:var(--font-display); font-size:24px; margin:0 0 2px; text-transform:none;}
+.today-head p{margin:0; font-size:14px;}
+.signal-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(340px,1fr)); gap:14px; align-items:start;}
+.signal{
+  background:var(--surface); border:1px solid var(--line); border-top:3px solid var(--line-strong);
+  border-radius:var(--radius); box-shadow:var(--shadow); padding:16px 18px; display:flex; flex-direction:column; gap:8px;
+}
+.signal.ok{border-top-color:var(--accent);}
+.signal.warn{border-top-color:var(--warn);}
+.signal.bad{border-top-color:var(--danger);}
+.signal header{display:flex; align-items:baseline; justify-content:space-between; gap:12px;}
+.signal h3{font-size:12px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:700; margin:0;}
+.signal-value{font-family:var(--font-mono); font-size:22px; font-weight:600; font-variant-numeric:tabular-nums; letter-spacing:-0.01em;}
+.signal.bad .signal-value{color:var(--danger);}
+.signal.warn .signal-value{color:var(--warn);}
+.signal.ok .signal-value{color:var(--accent-ink);}
+.signal-sub{margin:0; font-size:13px; color:var(--ink-soft);}
+.signal-empty{margin:0; font-size:13px; color:var(--ink-faint);}
+.signal-list{list-style:none; margin:2px 0 0; padding:0; display:grid; gap:6px; font-size:13.5px;}
+.signal-list li{padding-top:6px; border-top:1px dashed var(--line); line-height:1.5;}
+.signal-list li:first-child{border-top:none; padding-top:0;}
+.signal-goto{align-self:flex-start; margin-top:4px; font-size:13px; text-decoration:none;}
+.mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}

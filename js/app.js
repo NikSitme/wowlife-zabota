@@ -3,6 +3,7 @@ import { sb, OPEN, setSync, session, isAdmin, getSession, signIn, signOut, loadR
 import { renderAll as renderPeople, refreshCard } from './people.js';
 import { renderSchedule } from './schedule.js';
 import { renderRegs, renderProcs } from './docs.js';
+import { renderToday } from './today.js';
 
 /* ---------- тема ---------- */
 const THEME_KEY = 'payroll_care_theme_v1';
@@ -22,21 +23,24 @@ themeToggleBtn.addEventListener('click', () => setTheme(effectiveTheme() === 'da
 try { const t = localStorage.getItem(THEME_KEY); if (t === 'light' || t === 'dark') setTheme(t); else syncThemeIcon(); } catch(e){ syncThemeIcon(); }
 
 /* ---------- навигация ---------- */
-const PAGES = ['org', 'people', 'schedule', 'regs', 'procs', 'payroll', 'help'];
-let currentPage = 'org';
+const PAGES = ['today', 'org', 'people', 'schedule', 'regs', 'procs', 'payroll', 'help'];
+let currentPage = 'today';
 function showPage(p){
-  if (!PAGES.includes(p)) p = 'org';
-  if (p === 'payroll' && !isAdmin()) p = 'org';
+  if (!PAGES.includes(p)) p = 'today';
+  if (p === 'payroll' && !isAdmin()) p = 'today';
   currentPage = p;
   document.querySelectorAll('#mainNav .nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === p));
   document.querySelectorAll('.page').forEach(s => s.classList.toggle('active', s.dataset.page === p));
   try { history.replaceState(null, '', '#' + p); } catch(e){}
+  if (p === 'today') renderToday();
   if (p === 'payroll') import('./payroll.js').then(m => m.initPayroll()).catch(e => console.error(e));
 }
+document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showPage(g.dataset.goto); });
 document.getElementById('mainNav').addEventListener('click', e => { const b = e.target.closest('.nav-btn'); if (b) showPage(b.dataset.page); });
 
 /* ---------- отрисовка всего ---------- */
 function renderPage(key){
+  if (currentPage === 'today') renderToday();
   if (!key || key === 'employees' || key === 'departments'){ renderPeople(); renderSchedule(); renderRegs(); renderProcs(); }
   else if (key === 'shifts') renderSchedule();
   else if (key === 'regulations'){ renderRegs(); refreshCard(); }
@@ -71,7 +75,7 @@ async function enter(){
     return;
   }
   document.getElementById('userBadge').textContent = OPEN ? 'открытый доступ, без входа' : `${session.user.email} · ${role === 'admin' ? 'администратор' : 'просмотр'}`;
-  document.getElementById('signOutBtn').hidden = OPEN;
+  document.getElementById('signOutWrap').hidden = OPEN;
   document.querySelector('#mainNav .nav-btn[data-page="payroll"]').hidden = !isAdmin();
   document.body.classList.toggle('is-admin', isAdmin());
   try { await loadHR(); }
@@ -79,7 +83,7 @@ async function enter(){
   authScreen.hidden = true; appRoot.hidden = false;
   renderPage();
   setSync('ok', 'Сохранено');
-  showPage((location.hash || '#org').slice(1));
+  showPage((location.hash || '#today').slice(1));
   startHRRealtime();
 }
 onHRChange(renderPage);

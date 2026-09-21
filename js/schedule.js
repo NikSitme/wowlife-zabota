@@ -8,18 +8,20 @@ let cur = (() => { const t = new Date(); return { y: t.getFullYear(), m: t.getMo
 const iso = (y, m, d) => `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
 const daysIn = (y, m) => new Date(y, m + 1, 0).getDate();
 
-function supportStaff(){
+export function shiftsOn(day){ return HR.shifts.filter(s => s.day === day); }
+export function monthHasShifts(y, m){ return monthShifts(y, m).length > 0; }
+export function supportStaff(){
   return activeEmployees().filter(e => e.support_role).sort((a, b) => (a.support_role === 'senior' ? 0 : 1) - (b.support_role === 'senior' ? 0 : 1) || a.full_name.localeCompare(b.full_name));
 }
-function monthShifts(){ const p = iso(cur.y, cur.m, 1).slice(0, 7); return HR.shifts.filter(s => s.day.startsWith(p)); }
+function monthShifts(y = cur.y, m = cur.m){ const p = iso(y, m, 1).slice(0, 7); return HR.shifts.filter(s => s.day.startsWith(p)); }
 function has(day, empId){ return HR.shifts.some(s => s.day === day && s.employee_id === empId); }
 
 /* ---------- проверка правил ---------- */
-export function checkRules(){
-  const staff = supportStaff(), n = daysIn(cur.y, cur.m), issues = [];
-  const shifts = monthShifts();
+export function checkRules(y = cur.y, m = cur.m){
+  const staff = supportStaff(), n = daysIn(y, m), issues = [];
+  const shifts = monthShifts(y, m);
   for (let d = 1; d <= n; d++){
-    const day = iso(cur.y, cur.m, d);
+    const day = iso(y, m, d);
     const onDay = shifts.filter(s => s.day === day);
     if (!onDay.some(s => s.kind === 'senior')) issues.push({ day, text: `${d}: нет старшего смены` });
     if (onDay.length < 2) issues.push({ day, text: `${d}: меньше двух человек на смене` });
@@ -37,6 +39,7 @@ export function checkRules(){
 }
 
 /* ---------- отрисовка ---------- */
+export function gotoMonth(y, m){ cur = { y, m }; }
 export function renderSchedule(){
   const staff = supportStaff();
   const n = daysIn(cur.y, cur.m);
