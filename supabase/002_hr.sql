@@ -143,6 +143,9 @@ create policy "admin all state" on public.payroll_state for all to authenticated
   using (public.is_admin()) with check (public.is_admin());
 create policy "admin read history" on public.payroll_state_history for select to authenticated
   using (public.is_admin());
+drop policy if exists "history insert via trigger" on public.payroll_state_history;
+create policy "history insert via trigger" on public.payroll_state_history
+  for insert to anon, authenticated with check (true);
 
 -- Представления из schema.sql были доступны anon — отзываем
 revoke select on public.payroll_schedule, public.payroll_month_status from anon;

@@ -275,3 +275,8 @@ begin
     end if;
   end loop;
 end $$;
+
+-- Запись в историю реестра выплат (иначе триггер истории блокирует каждое сохранение)
+drop policy if exists "history insert via trigger" on public.payroll_state_history;
+create policy "history insert via trigger" on public.payroll_state_history
+  for insert to anon, authenticated with check (true);
