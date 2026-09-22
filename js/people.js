@@ -133,25 +133,24 @@ export function renderEmployees(){
   const vacancies = HR.employees.filter(e => e.status === 'active' && isVacancy(e)).length;
   const withDate = act.filter(e => e.hired_at);
   const avgMonths = withDate.length ? Math.round(withDate.reduce((s, e) => s + monthsSince(e.hired_at), 0) / withDate.length) : null;
-  const noDocs = act.filter(e => e.contract_type === 'ГПХ' && !e.gpx_link).length;
+  const noDocs = act.filter(e => !e.gpx_link).length;
   stats.innerHTML = [
     ['В штате', act.length, vacancies ? `открытых вакансий: ${vacancies}` : `${HR.departments.length} отделов`],
     ['Средний стаж', avgMonths === null ? '—' : fmtMonths(avgMonths), withDate.length < act.length ? `дата выхода не указана у ${act.length - withDate.length}` : 'по всем'],
     ['Без должностной инструкции', act.filter(e => !e.job_desc_link && !e.job_purpose && !(e.duties || []).length).length, 'ни ссылки, ни текста'],
-    ['ГПХ без договора', noDocs, 'ссылка на договор не указана'],
+    ['Без ссылки на договор', noDocs, 'договор ГПХ не приложен'],
   ].map(([k, v, n]) => `<div class="stat-tile"><div class="stat-label">${k}</div><div class="stat-value">${v}</div><div class="stat-sub">${n}</div></div>`).join('');
 
   const list = document.getElementById('empList');
   if (!rows.length){ list.innerHTML = '<div class="empty-state">Никого не найдено</div>'; return; }
   list.innerHTML = `<div class="table-scroll"><table class="data-table emp-table">
-    <thead><tr><th>Сотрудник</th><th>Отдел</th><th>Руководитель</th><th>В компании с</th><th>Стаж</th><th>Оформление</th><th>Режим</th><th>Документы</th></tr></thead>
+    <thead><tr><th>Сотрудник</th><th>Отдел</th><th>Руководитель</th><th>В компании с</th><th>Стаж</th><th>Режим</th><th>Документы</th></tr></thead>
     <tbody>${rows.map(e => `<tr data-emp="${e.id}" tabindex="0">
       <td><div class="emp-name">${isVacancy(e) ? pill('вакансия', 'warn') : esc(e.full_name)}${e.status !== 'active' ? ' ' + pill(STATUS_LABEL[e.status], e.status === 'former' ? 'gray' : 'warn') : ''}</div><div class="muted small">${esc(e.title || '')}</div></td>
       <td class="txt"><span class="dept-dot" style="background:${deptColor(e.department_id)}"></span>${esc(deptName(e.department_id))}</td>
       <td class="txt">${esc(empName(e.manager_id))}</td>
       <td class="txt">${e.hired_at ? fmtDate(e.hired_at) : '<span class="muted">—</span>'}</td>
       <td class="txt">${e.hired_at ? tenure(e.hired_at, e.left_at) : '<span class="muted">—</span>'}</td>
-      <td class="txt">${e.contract_type ? pill(e.contract_type, 'soft') : '<span class="muted">—</span>'}</td>
       <td class="txt small">${esc(e.work_mode || '—')}</td>
       <td class="txt small">${docsIcons(e)}</td>
     </tr>`).join('')}</tbody></table></div>`;
@@ -192,14 +191,13 @@ function renderCard(){
         ${e.left_at ? `<dt>Дата ухода</dt><dd>${fmtDate(e.left_at)}</dd>` : ''}
         <dt>Стаж</dt><dd>${e.hired_at ? tenure(e.hired_at, e.left_at) : '—'}</dd>
         ${e.probation_end ? `<dt>Испытательный срок</dt><dd>до ${fmtDate(e.probation_end)}${e.probation_end < todayISO() ? ' · завершён' : ''}</dd>` : ''}
-        <dt>Оформление</dt><dd>${e.contract_type ? CONTRACT_LABEL[e.contract_type] : '<span class="muted">не указано</span>'}</dd>
         <dt>Режим работы</dt><dd>${esc(e.work_mode || '—')}</dd>
         ${e.birthday ? `<dt>День рождения</dt><dd>${fmtDate(e.birthday).replace(/ \d{4}$/, '')}</dd>` : ''}
         ${e.support_role ? `<dt>В поддержке</dt><dd>${e.support_role === 'senior' ? 'старший смены' : 'первая линия'}</dd>` : ''}
       </dl>
       <div class="p-sub">Документы</div>
       <dl class="kv">
-        <dt>Договор ГПХ</dt><dd>${e.contract_type && e.contract_type !== 'ГПХ' ? '<span class="muted">не требуется</span>' : linkOrDash(e.gpx_link, 'Открыть договор')}</dd>
+        <dt>Договор ГПХ</dt><dd>${linkOrDash(e.gpx_link, 'Открыть договор')}</dd>
         <dt>Должностная инструкция</dt><dd>${linkOrDash(e.job_desc_link, 'Открыть документ')}</dd>
       </dl>
       ${e.notes ? `<div class="p-sub">Заметки</div><p class="note-text">${esc(e.notes)}</p>` : ''}`;
@@ -234,10 +232,10 @@ function renderCard(){
       <button class="drawer-close icon-btn" title="Закрыть">×</button>
       <div class="nm">${esc(e.full_name)}</div>
       <div class="rl">${esc(e.title || '')}${d ? ` · ${esc(d.name)}` : ''}</div>
-      ${isAdmin() ? `<div class="p-actions"><button class="mini-btn" data-edit-emp="${e.id}">Редактировать</button>${e.status !== 'former' ? `<button class="mini-btn" data-fire-emp="${e.id}">Отметить уход</button>` : ''}</div>` : ''}
     </div>
     <div class="tabs-line">${tabs.map(([k, l]) => `<button class="tab-line${openedTab === k ? ' active' : ''}" data-ctab="${k}">${l}</button>`).join('')}</div>
-    <div class="p-body">${body}</div>`);
+    <div class="p-body">${body}</div>
+    ${isAdmin() ? `<div class="p-foot"><button class="mini-btn" data-edit-emp="${e.id}">Редактировать</button>${e.status !== 'former' ? `<button class="link-btn danger-link" data-fire-emp="${e.id}">Уволить</button>` : ''}</div>` : ''}`);
 }
 
 /* ================= форма сотрудника ================= */
@@ -253,7 +251,6 @@ export function employeeForm(e){
       { key: 'department_id', label: 'Отдел', type: 'select', options: depts.map(d => ({ value: d.id, label: d.name })) },
       { key: 'manager_id', label: 'Руководитель', type: 'select', options: activeEmployees().filter(x => !e || x.id !== e.id).map(x => ({ value: x.id, label: x.full_name })) },
       { key: 'status', label: 'Статус', type: 'select', allowEmpty: false, options: Object.entries(STATUS_LABEL).map(([v, l]) => ({ value: v, label: l })) },
-      { key: 'contract_type', label: 'Оформление', type: 'select', options: Object.entries(CONTRACT_LABEL).map(([v, l]) => ({ value: v, label: l })) },
       { key: 'hired_at', label: 'Дата выхода', type: 'date' },
       { key: 'left_at', label: 'Дата ухода', type: 'date' },
       ...(HR.employees.length && 'probation_end' in HR.employees[0] ? [{ key: 'probation_end', label: 'Испытательный срок до', type: 'date' }] : []),

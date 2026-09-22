@@ -12,7 +12,17 @@ const RU_MONTHS = ['ЯНВАРЬ','ФЕВРАЛЬ','МАРТ','АПРЕЛЬ','М
 // broke silently for any visitor whose system date isn't in this month, since fixed-salary
 // employees only get their schedule rows seeded "from the current month onward" (see
 // seedProductDept) and the schedule tab defaults its month filter the same way.
-const CURRENT_MONTH = DATA.calcMonthOrder[DATA.calcMonthOrder.length - 1];
+// Текущий месяц — по календарю (раньше брался последний месяц из исходных данных и застревал на августе).
+const CURRENT_MONTH = RU_MONTHS[new Date().getMonth()];
+// Месяц, который открывается по умолчанию во вкладках выплат — настоящий календарный месяц по
+// московскому времени. CURRENT_MONTH выше трогать нельзя: от него зависит засев графика.
+function todayMonthLabel(){
+  try {
+    const m = Number(new Intl.DateTimeFormat('en-US', {timeZone:'Europe/Moscow', month:'numeric'}).format(new Date()));
+    if (m >= 1 && m <= 12) return RU_MONTHS[m - 1];
+  } catch(e){}
+  return RU_MONTHS[new Date().getMonth()];
+}
 const MONTH_SHORT = {'ЯНВАРЬ':'Янв','ФЕВРАЛЬ':'Фев','МАРТ':'Мар','АПРЕЛЬ':'Апр','МАЙ':'Май','ИЮНЬ':'Июн','ИЮЛЬ':'Июл','АВГУСТ':'Авг','СЕНТЯБРЬ':'Сен','ОКТЯБРЬ':'Окт','НОЯБРЬ':'Ноя','ДЕКАБРЬ':'Дек'};
 const ROLES = ['Продажи','Активации','Продукт','Администраторы','Маркетплейсы','Разработка','Руководство'];
 const EMP_COLORS = {galya:'#2F6F5E', glafira:'#4E7FA6', lena:'#8A6FA6', sasha:'#B8842E', yana:'#B2555A', anya:'#5E8C4A', milana:'#8C8C82', vasilisa:'#3B5773', anastasia:'#A0785A', ekaterina:'#6E8F8C', marina:'#9B6A3E', alina:'#5A7CA6', pavel:'#7A9B3E', ilya:'#4E6B8E', nikita:'#8E4E6B'};
@@ -567,10 +577,10 @@ document.getElementById('tabNav').addEventListener('click', e => {
 });
 
 /* ================= SCHEDULE TAB ================= */
-// Defaults to CURRENT_MONTH (all 12 months are pre-seeded, so it's always present) rather than
-// "Все", so opening the tab lands on "now"; the month selector in the toolbar lets you switch to
-// any other month or back to "Все".
-let scheduleFilters = { month: CURRENT_MONTH, role: 'all' };
+// Defaults to the real calendar month (all 12 months are pre-seeded, so it's always present)
+// rather than "Все", so opening the tab lands on "now"; the month selector in the toolbar lets you
+// switch to any other month or back to "Все".
+let scheduleFilters = { month: todayMonthLabel(), role: 'all' };
 let scheduleView = 'list';
 const WEEKDAYS = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
@@ -1162,12 +1172,14 @@ calcGroupsEl.addEventListener('click', e => {
   }
 });
 
-// Default to CURRENT_MONTH when it's available (it always is, now that all 12 months are
-// pre-seeded) so opening the tab lands on "now" rather than on December just because it sorts
-// last; falls back to the most recent month otherwise.
+// Default to the real calendar month when it's available (it always is, now that all 12 months
+// are pre-seeded) so opening the tab lands on "now" rather than on December just because it sorts
+// last; falls back to the dataset's month, then to the most recent one.
 function defaultCalcMonth(){
   const months = allCalcMonths();
   if (!months.length) return null;
+  const now = todayMonthLabel();
+  if (months.includes(now)) return now;
   return months.includes(CURRENT_MONTH) ? CURRENT_MONTH : months[months.length-1];
 }
 

@@ -83,8 +83,7 @@ export async function renderToday(){
   const act = HR.employees.filter(e => e.status === 'active' && !isPlaceholder(e)); // вакансии и позиции без имени не считаем
   const gaps = [
     ['нет даты выхода', e => !e.hired_at],
-    ['не указано оформление', e => !e.contract_type],
-    ['ГПХ без ссылки на договор', e => e.contract_type === 'ГПХ' && !e.gpx_link],
+    ['нет ссылки на договор', e => !e.gpx_link],
     ['нет должностной инструкции', e => !e.job_desc_link && !e.job_purpose && !(e.duties || []).length],
     ['не указан режим работы', e => !e.support_role && !e.work_mode],
   ];

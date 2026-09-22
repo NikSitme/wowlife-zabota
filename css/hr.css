@@ -65,7 +65,7 @@
 /* ряд руководителей под общим начальником */
 .org-row{display:flex; justify-content:center; align-items:flex-start; gap:var(--gap); position:relative; padding-top:calc(var(--stem) * 2); align-self:stretch;}
 .org-row::before{content:""; position:absolute; top:0; left:50%; width:1px; height:var(--stem); background:var(--line);}
-.org-col{position:relative; display:flex; flex-direction:column; align-items:stretch; flex:1 1 0; min-width:230px; max-width:340px;}
+.org-col{position:relative; display:flex; flex-direction:column; align-items:stretch; flex:1 1 0; min-width:196px; max-width:340px;}
 .org-col::before{content:""; position:absolute; top:calc(var(--stem) * -1); left:50%; width:1px; height:var(--stem); background:var(--line);}
 .org-col::after{content:""; position:absolute; top:calc(var(--stem) * -1); left:calc(var(--gap) / -2); right:calc(var(--gap) / -2); height:1px; background:var(--line);}
 .org-col:first-child::after{left:50%;}
@@ -73,8 +73,8 @@
 .org-col:only-child::after{display:none;}
 
 /* руководитель нескольких отделов: его ветка шире и делится на подветки по отделам */
-.org-col.wide{flex:2 1 0; min-width:470px; max-width:720px;}
-.org-col.sub{min-width:200px; max-width:none;}
+.org-col.wide{flex:2 1 0; min-width:420px; max-width:720px;}
+.org-col.sub{min-width:180px; max-width:none;}
 .org-node.group{cursor:default; box-shadow:none; background:color-mix(in srgb, var(--dept-color, var(--accent)) 10%, var(--surface)); border-left-width:1px; border-top:3px solid var(--dept-color, var(--accent)); padding:7px 12px; flex-direction:row; align-items:baseline; justify-content:space-between; gap:10px; align-self:stretch;}
 .org-node.group:hover{transform:none; border-color:var(--line-strong); border-top-color:var(--dept-color, var(--accent));}
 .org-node.group .org-title{font-size:12px; text-transform:uppercase; letter-spacing:.06em;}
@@ -254,3 +254,8 @@
 .signal-list li:first-child{border-top:none; padding-top:0;}
 .signal-goto{align-self:flex-start; margin-top:4px; font-size:13px; text-decoration:none;}
 .mono{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
+
+/* ---------- низ карточки: действия ---------- */
+.p-foot{display:flex; align-items:center; gap:18px; padding:14px 22px 26px; border-top:1px solid var(--line);}
+.danger-link{color:var(--danger); text-decoration:underline; text-underline-offset:3px;}
+.danger-link:hover{color:var(--danger); opacity:.8;}
