@@ -398,7 +398,8 @@ async function remoteSave(){
       .eq('id', DOC_ID).eq('version', remoteVersion).select('version');
     if (error){
       console.error('payroll_state save failed', error);
-      setSync('error', 'Ошибка сохранения: ' + error.message);
+      setSync('error', 'Ошибка сохранения: ' + error.message + ' — повторю через 20 секунд');
+      clearTimeout(saveTimer); saveTimer = setTimeout(() => { saveTimer = null; remoteSave(); }, 20000); // правки не теряются: повторяем, пока база не примет
       return;
     }
     if (!data || !data.length){

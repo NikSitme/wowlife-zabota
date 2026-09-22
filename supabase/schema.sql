@@ -19,7 +19,7 @@ create table if not exists public.payroll_state_history (
 );
 
 create or replace function public.payroll_state_keep_history()
-returns trigger language plpgsql as $$
+returns trigger language plpgsql security definer set search_path = public as $$
 begin
   insert into public.payroll_state_history (doc_id, version, state, saved_at)
   values (old.id, old.version, old.state, old.updated_at);
