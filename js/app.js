@@ -1,6 +1,6 @@
 // Точка входа: тема, вход, навигация, загрузка данных, realtime.
 import { sb, OPEN, setSync, session, isAdmin, getSession, signIn, signOut, loadRole, loadHR, onHRChange, startHRRealtime, esc } from './db.js';
-import { renderAll as renderPeople, refreshCard } from './people.js';
+import { renderAll as renderPeople, refreshCard, fitOrg } from './people.js';
 import { renderSchedule } from './schedule.js';
 import { renderRegs, renderProcs } from './docs.js';
 import { renderToday } from './today.js';
@@ -33,6 +33,7 @@ function showPage(p){
   document.querySelectorAll('.page').forEach(s => s.classList.toggle('active', s.dataset.page === p));
   try { history.replaceState(null, '', '#' + p); } catch(e){}
   if (p === 'today') renderToday();
+  if (p === 'org') requestAnimationFrame(fitOrg);
   if (p === 'payroll') import('./payroll.js').then(m => m.initPayroll()).catch(e => console.error(e));
 }
 document.addEventListener('click', e => { const g = e.target.closest('[data-goto]'); if (g) showPage(g.dataset.goto); });

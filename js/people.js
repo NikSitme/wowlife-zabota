@@ -54,6 +54,7 @@ export function renderOrg(){
   wrap.innerHTML = roots.length
     ? `<div class="org-scroll">${roots.map(r => `<div class="org">${branch(r, 'root')}</div>`).join('')}</div>`
     : '<div class="empty-state">Сотрудников пока нет</div>';
+  fitOrg();
 
   // отделы
   const dl = document.getElementById('deptList');
@@ -70,6 +71,19 @@ export function renderOrg(){
     </div>`;
   }).join('') + (isAdmin() ? `<button class="mini-btn" id="addDeptBtn">+ Добавить отдел</button>` : '');
 }
+
+// Подгонка масштаба: схема всегда целиком в ширину окна, без горизонтальной прокрутки
+export function fitOrg(){
+  const wrap = document.getElementById('orgChart');
+  const scroll = wrap.querySelector('.org-scroll'); if (!scroll) return;
+  const orgs = Array.from(scroll.querySelectorAll(':scope > .org'));
+  orgs.forEach(o => { o.style.zoom = ''; });
+  const have = scroll.clientWidth - 8;
+  const need = Math.max(...orgs.map(o => o.scrollWidth));
+  if (need > have) orgs.forEach(o => { o.style.zoom = Math.max(0.5, have / need).toFixed(3); });
+}
+let fitTimer = null;
+window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitOrg, 120); });
 
 const PALETTE = ['#2E5AAC','#B8842E','#2F6F5E','#8A6FA6','#B2555A','#5E8C4A','#7A5D8A','#9B6A3E','#4E6B8E','#5A7CA6'];
 function deptColor(id){
