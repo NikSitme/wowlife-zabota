@@ -91,6 +91,14 @@
 .org-stack > .org-node:last-child::after{height:calc(50% + 9px);}
 .org-stack > .org-node:first-child:last-child::after{top:-13px; height:calc(50% + 13px);}
 .org-stack > .org-node:hover{transform:translateX(2px);}
+/* вложенный столбик: сотрудник со своими подчинёнными внутри столбика руководителя */
+.org-sub{position:relative; display:flex; flex-direction:column;}
+.org-stack > .org-sub > .org-node::before{content:""; position:absolute; left:-15px; top:50%; width:14px; height:1px; background:var(--line);}
+.org-stack > .org-sub::after{content:""; position:absolute; left:-15px; top:-9px; width:1px; height:calc(100% + 9px); background:var(--line);}
+.org-stack > .org-sub:first-child::after{top:-13px; height:calc(100% + 13px);}
+.org-stack > .org-sub:last-child::after{display:none;}
+.org-stack > .org-sub:last-child > .org-node::after{content:""; position:absolute; left:-15px; top:-9px; width:1px; height:calc(50% + 9px); background:var(--line);}
+.org-stack > .org-sub:first-child:last-child > .org-node::after{top:-13px; height:calc(50% + 13px);}
 
 @media (max-width:760px){
   .org-row{flex-direction:column; align-items:stretch; padding-top:var(--stem); gap:18px;}

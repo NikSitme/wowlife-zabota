@@ -49,6 +49,12 @@ export function renderOrg(){
     if (groups) return `${nodeHtml(e, kind)}<div class="org-row">${groups.map(g => `<div class="org-col sub">${groupHtml(g)}<div class="org-stack">${g.kids.map(k => nodeHtml(k, 'leaf')).join('')}</div></div>`).join('')}</div>`;
     const allLeaves = kids.every(k => !children0(k.id));
     if (allLeaves) return `${nodeHtml(e, kind)}<div class="org-stack">${kids.map(k => nodeHtml(k, 'leaf')).join('')}</div>`;
+    // Ниже второго уровня — не раскладываем в ряд, а вкладываем столбик в столбик (SMM-менеджер → креаторы под продактом),
+    // иначе ветка продакта расползается на несколько колонок и схема перестаёт помещаться на экран.
+    const twoLevels = kids.every(k => children(k.id).every(g => !children0(g.id)));
+    if (kind !== 'root' && twoLevels) return `${nodeHtml(e, kind)}<div class="org-stack">${kids.map(k => children0(k.id)
+      ? `<div class="org-sub">${nodeHtml(k, 'leaf')}<div class="org-stack">${children(k.id).map(g => nodeHtml(g, 'leaf')).join('')}</div></div>`
+      : nodeHtml(k, 'leaf')).join('')}</div>`;
     return `${nodeHtml(e, kind)}<div class="org-row">${kids.map(k => `<div class="org-col${splitGroups(k) ? ' wide' : ''}">${branch(k, 'head')}</div>`).join('')}</div>`;
   };
   wrap.innerHTML = roots.length
