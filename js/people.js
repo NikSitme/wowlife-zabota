@@ -152,7 +152,7 @@ export function renderEmployees(){
     ['В штате', act.length, vacancies ? `открытых вакансий: ${vacancies}` : `${HR.departments.length} отделов`],
     ['Средний стаж', avgMonths === null ? '—' : fmtMonths(avgMonths), withDate.length < act.length ? `дата выхода не указана у ${act.length - withDate.length}` : 'по всем'],
     ['Без должностной инструкции', act.filter(e => !e.job_desc_link && !e.job_purpose && !(e.duties || []).length).length, 'ни ссылки, ни текста'],
-    ['Без ссылки на договор', noDocs, 'договор ГПХ не приложен'],
+    ['Без ссылки на договор', noDocs, 'договор не приложен'],
   ].map(([k, v, n]) => `<div class="stat-tile"><div class="stat-label">${k}</div><div class="stat-value">${v}</div><div class="stat-sub">${n}</div></div>`).join('');
 
   const list = document.getElementById('empList');
@@ -171,7 +171,7 @@ export function renderEmployees(){
 }
 function docsIcons(e){
   const items = [];
-  if (e.gpx_link) items.push(`<a href="${esc(e.gpx_link)}" target="_blank" rel="noopener" title="Договор ГПХ">ГПХ ↗</a>`);
+  if (e.gpx_link) items.push(`<a href="${esc(e.gpx_link)}" target="_blank" rel="noopener" title="Договор">Договор ↗</a>`);
   if (e.job_desc_link) items.push(`<a href="${esc(e.job_desc_link)}" target="_blank" rel="noopener" title="Должностная инструкция">ДИ ↗</a>`);
   else if (e.job_purpose || (e.duties || []).length) items.push('<span title="Инструкция заполнена в карточке">ДИ ✓</span>');
   return items.join(' · ') || '<span class="muted">—</span>';
@@ -211,7 +211,7 @@ function renderCard(){
       </dl>
       <div class="p-sub">Документы</div>
       <dl class="kv">
-        <dt>Договор ГПХ</dt><dd>${linkOrDash(e.gpx_link, 'Открыть договор')}</dd>
+        <dt>Договор</dt><dd>${linkOrDash(e.gpx_link, 'Открыть договор')}</dd>
         <dt>Должностная инструкция</dt><dd>${linkOrDash(e.job_desc_link, 'Открыть документ')}</dd>
       </dl>
       ${e.notes ? `<div class="p-sub">Заметки</div><p class="note-text">${esc(e.notes)}</p>` : ''}`;
@@ -270,7 +270,7 @@ export function employeeForm(e){
       ...(HR.employees.length && 'probation_end' in HR.employees[0] ? [{ key: 'probation_end', label: 'Испытательный срок до', type: 'date' }] : []),
       { key: 'work_mode', label: 'Режим работы', type: 'text', placeholder: '5/2, 10:00–19:00, офис' },
       { key: 'support_role', label: 'Роль в поддержке', type: 'select', options: [{ value: 'line', label: 'Первая линия' }, { value: 'senior', label: 'Старший смены' }] },
-      { key: 'gpx_link', label: 'Ссылка на договор ГПХ (Google Drive)', type: 'url', width: 'full' },
+      { key: 'gpx_link', label: 'Ссылка на договор (ГПХ, агентский, трудовой)', type: 'url', width: 'full' },
       { key: 'job_desc_link', label: 'Ссылка на должностную инструкцию', type: 'url', width: 'full' },
       { key: 'job_purpose', label: 'Назначение должности', type: 'textarea', rows: 2, width: 'full' },
       { key: 'duties', label: 'Обязанности (по одной на строку)', type: 'lines', rows: 5, width: 'full' },
