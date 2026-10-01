@@ -33,7 +33,7 @@ export const onVacation = (id, day) => HR.vacations.some(v => v.employee_id === 
 // Условные даты (известно только число дней) в «сейчас» и «скоро» не попадают — они видны на ленте штриховкой
 export const awayToday = () => HR.vacations.filter(v => { const t = todayISO(); return !v.approx && v.start_date <= t && v.end_date >= t; });
 
-// Пересечения: двое из одного отдела отдыхают в одни дни (у заботы — продажи и активации считаем одной линией поддержки)
+// Пересечения: двое из одного отдела отдыхают в одни дни (1 и 2 линия поддержки считаются вместе)
 const crewOf = e => ['sales', 'activ'].includes(e.department_id) ? 'support' : e.department_id;
 export function overlaps(y = year){
   const vs = HR.vacations.filter(v => daysInYear(v, y) > 0 && !v.approx); // у условных дат пересечение ничего не значит
@@ -111,7 +111,7 @@ export function renderVacations(){
       <div class="vac-legend"><span class="vac-bar ok"></span>согласован <span class="vac-bar plan"></span>план <span class="vac-bar ok approx"></span>даты условные <span class="vac-bar ok other"></span>больничный, за свой счёт</div>
       ${isAdmin() ? `<button class="sync-btn" data-vac-add>+ Отпуск</button>` : ''}
     </div>
-    <p class="help-note">Справа — дни ежегодного отпуска за ${year} год из нормы ${YEAR_NORM} + остаток прошлого года. У ИП и самозанятых отпуска по ТК нет, показано просто число дней. Пересечения считаются внутри отдела, продажи и активации — одна линия поддержки.</p>
+    <p class="help-note">Справа — дни ежегодного отпуска за ${year} год из нормы ${YEAR_NORM} + остаток прошлого года. У ИП и самозанятых отпуска по ТК нет, показано просто число дней. Пересечения считаются внутри отдела, 1 и 2 линия поддержки — вместе.</p>
     ${summary}
     <div class="vac-board">${scale}${groups}</div>`;
 }

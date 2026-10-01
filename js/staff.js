@@ -5,7 +5,7 @@ import { sb, HR } from './db.js';
 const RU_MONTHS = ['ЯНВАРЬ','ФЕВРАЛЬ','МАРТ','АПРЕЛЬ','МАЙ','ИЮНЬ','ИЮЛЬ','АВГУСТ','СЕНТЯБРЬ','ОКТЯБРЬ','НОЯБРЬ','ДЕКАБРЬ'];
 
 // Группа в реестре выплат = отдел в оргструктуре
-export const DEPT_ROLE = { sales: 'Продажи', activ: 'Активации', product: 'Продукт', mkt: 'Маркетинг', admin: 'Администраторы',
+export const DEPT_ROLE = { sales: '1 линия', activ: '2 линия', product: 'Продукт', mkt: 'Маркетинг', admin: 'Администраторы',
   mp: 'Маркетплейсы', dev: 'Разработка', mgmt: 'Руководство' };
 export function payrollRole(e){
   if (/разов/i.test(e.title || '')) return 'Разовая';

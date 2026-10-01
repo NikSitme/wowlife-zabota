@@ -44,9 +44,9 @@ function todayMonthLabel(){
   return RU_MONTHS[new Date().getMonth()];
 }
 const MONTH_SHORT = {'ЯНВАРЬ':'Янв','ФЕВРАЛЬ':'Фев','МАРТ':'Мар','АПРЕЛЬ':'Апр','МАЙ':'Май','ИЮНЬ':'Июн','ИЮЛЬ':'Июл','АВГУСТ':'Авг','СЕНТЯБРЬ':'Сен','ОКТЯБРЬ':'Окт','НОЯБРЬ':'Ноя','ДЕКАБРЬ':'Дек'};
-const ROLES = ['Продажи','Активации','Продукт','Администраторы','Маркетинг','Маркетплейсы','Разработка','Руководство'];
+const ROLES = ['1 линия','2 линия','Продукт','Администраторы','Маркетинг','Маркетплейсы','Разработка','Руководство'];
 const EMP_COLORS = {galya:'#655DA6', glafira:'#1FA3BD', lena:'#5E7CE2', sasha:'#D36BFF', yana:'#A94FD4', anya:'#F2408C', milana:'#7C7C8A', vasilisa:'#9B9BE4', anastasia:'#B8B8C8', ekaterina:'#00A9B5', marina:'#3E3880', alina:'#30CBE9', pavel:'#C04BE0', ilya:'#0E7A86', nikita:'#7C7C8A', veronika:'#FF7DB3', diana:'#FB4591', masha:'#8C6BD9', alexey:'#4FB8D6'};
-const ROLE_COLORS = {'Руководство':'#655DA6', 'Продажи':'#1FA3BD', 'Активации':'#D36BFF', 'Продукт':'#9B9BE4', 'Администраторы':'#00A9B5', 'Маркетплейсы':'#A94FD4', 'Разработка':'#5E7CE2', 'Маркетинг':'#F2408C'};
+const ROLE_COLORS = {'Руководство':'#655DA6', '1 линия':'#1FA3BD', '2 линия':'#D36BFF', 'Продукт':'#9B9BE4', 'Администраторы':'#00A9B5', 'Маркетплейсы':'#A94FD4', 'Разработка':'#5E7CE2', 'Маркетинг':'#F2408C'};
 const WARN_COLOR = '#D36BFF', ACCENT_COLOR = '#655DA6'; // аванс — orchid, ЗП — violet (DESIGN.md)
 
 function parseISO(iso){ const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
