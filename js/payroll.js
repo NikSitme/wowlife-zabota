@@ -1,9 +1,29 @@
-import { sb, setSync } from './db.js';
+import { sb, setSync, HR, onHRChange } from './db.js';
+import { isPlaceholder } from './people.js';
+import { payrollRole, keyOfLabel, hireKey, leaveCutoff, applyDepartures } from './staff.js';
 
 const DATA = {"employees":[{"id":"galya","full":"Шашкова Галина","short":"Галя","role":"Продажи","title":"РОП"},{"id":"glafira","full":"Шишерина Глафира","short":"Глафира","role":"Продажи","title":"МОП"},{"id":"lena","full":"Благородова Лена","short":"Лена","role":"Продажи","title":"МОП"},{"id":"sasha","full":"Дергунова Саша","short":"Саша","role":"Активации"},{"id":"yana","full":"Мамуткина Яна","short":"Яна","role":"Активации"},{"id":"anya","full":"Фарукова Анна","short":"Аня","role":"Активации"},{"id":"milana","full":"Милана","short":"Милана","role":"Разовая"},{"id":"vasilisa","full":"Василиса","short":"Василиса","role":"Продукт","title":"Продакт Менеджер"},{"id":"anastasia","full":"Анастасия","short":"Анастасия","role":"Продукт","title":"Менеджер по работе с партнерами"},{"id":"ekaterina","full":"Екатерина","short":"Екатерина","role":"Продукт","title":"Младший менеджер"},{"id":"marina","full":"Марина","short":"Марина","role":"Администраторы"},{"id":"alina","full":"Алина","short":"Алина","role":"Администраторы"},{"id":"pavel","full":"Павел","short":"Павел","role":"Маркетплейсы","title":"Менеджер по маркетплейсам"},{"id":"ilya","full":"Илья","short":"Илья","role":"Разработка","title":"Разработчик"},{"id":"nikita","full":"Никита","short":"Никита","role":"Руководство","title":"Операционный директор"},{"id":"veronika","full":"Саркисян Вероника","short":"Вероника","role":"Маркетинг","title":"SMM-менеджер"}],"schedule":[{"id":"p1","emp":"galya","date":"2026-07-05","amount":87828.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p2","emp":"glafira","date":"2026-07-05","amount":90208.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p3","emp":"sasha","date":"2026-07-05","amount":48000.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p4","emp":"yana","date":"2026-07-05","amount":53000.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p5","emp":"lena","date":"2026-07-15","amount":25021.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p6","emp":"anya","date":"2026-07-15","amount":23660.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p7","emp":"milana","date":"2026-07-21","amount":45000.0,"type":"ЗП","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p8","emp":"galya","date":"2026-07-25","amount":30000.0,"type":"Аванс","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p9","emp":"glafira","date":"2026-07-25","amount":40000.0,"type":"Аванс","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p10","emp":"sasha","date":"2026-07-25","amount":30000.0,"type":"Аванс","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p11","emp":"yana","date":"2026-07-25","amount":30000.0,"type":"Аванс","paid":true,"note":null,"month":"ИЮЛЬ"},{"id":"p12","emp":"lena","date":"2026-08-01","amount":40000.0,"type":"Аванс","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p13","emp":"anya","date":"2026-08-01","amount":30000.0,"type":"Аванс","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p14","emp":"galya","date":"2026-08-07","amount":93641.0,"type":"ЗП","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p15","emp":"glafira","date":"2026-08-07","amount":94158.0,"type":"ЗП","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p16","emp":"sasha","date":"2026-08-07","amount":48400.0,"type":"ЗП","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p17","emp":"yana","date":"2026-08-07","amount":53400.0,"type":"ЗП","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p18","emp":"lena","date":"2026-08-14","amount":67652.0,"type":"ЗП","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p19","emp":"anya","date":"2026-08-14","amount":53400.0,"type":"ЗП","paid":true,"note":null,"month":"АВГУСТ"},{"id":"p20","emp":"galya","date":"2026-08-24","amount":40000.0,"type":"Аванс","paid":false,"note":null,"month":"АВГУСТ"},{"id":"p21","emp":"glafira","date":"2026-08-24","amount":40000.0,"type":"Аванс","paid":false,"note":null,"month":"АВГУСТ"},{"id":"p22","emp":"sasha","date":"2026-08-24","amount":30000.0,"type":"Аванс","paid":false,"note":null,"month":"АВГУСТ"},{"id":"p23","emp":"yana","date":"2026-08-24","amount":30000.0,"type":"Аванс","paid":false,"note":null,"month":"АВГУСТ"},{"id":"p24","emp":"lena","date":"2026-09-01","amount":40000.0,"type":"Аванс","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p25","emp":"anya","date":"2026-09-01","amount":30000.0,"type":"Аванс","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p26","emp":"galya","date":"2026-09-10","amount":60000.0,"type":"ЗП","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p27","emp":"glafira","date":"2026-09-10","amount":42600.0,"type":"ЗП","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p28","emp":"sasha","date":"2026-09-10","amount":49000.0,"type":"ЗП","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p29","emp":"yana","date":"2026-09-10","amount":56000.0,"type":"ЗП","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p30","emp":"lena","date":"2026-09-15","amount":48800.0,"type":"ЗП","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p31","emp":"anya","date":"2026-09-15","amount":56000.0,"type":"ЗП","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p32","emp":"galya","date":"2026-09-25","amount":40000.0,"type":"Аванс","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p33","emp":"glafira","date":"2026-09-25","amount":40000.0,"type":"Аванс","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p34","emp":"sasha","date":"2026-09-25","amount":30000.0,"type":"Аванс","paid":false,"note":null,"month":"СЕНТЯБРЬ"},{"id":"p35","emp":"yana","date":"2026-09-25","amount":30000.0,"type":"Аванс","paid":false,"note":null,"month":"СЕНТЯБРЬ"}],"calc":{"ИЮНЬ":{"galya":[{"label":"Часы","value":172.0},{"label":"Оклад, руб","value":80000.0},{"label":"план по лидам","value":2156000.0},{"label":"выручка по лидам","value":2572797.0},{"label":"коэффициент","value":1.0},{"label":"% за выручку по лидам","value":119.3319573},{"label":"Премия за лиды","value":20000},{"label":"План время ответа","value":25.0},{"label":"Факт время ответа","value":30.0},{"label":"коэффициент","value":0.0},{"label":"Премия за ответы","value":0},{"label":"Выполнение плана","value":10000.0},{"label":"Личные продажи","value":391411.0},{"label":"% с личных продаж","value":2.0},{"label":"Бонус за личные продажи","value":7828.22},{"label":"Всего зп, руб","value":117828.22},{"label":"Аванс","value":30000.0},{"label":"ЗП (в конце месяца)","value":87828.22},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"glafira":[{"label":"Часы, офис","value":157.0},{"label":"Оклад, руб","value":40000.0},{"label":"Выручка по лидам","value":1284152.0},{"label":"Конверсия по лидам","value":0.8172},{"label":"Премия за конверсию","value":64207.6},{"label":"Выполнение плана","value":20000.0},{"label":"Скорость ответа на обращения","value":0.0},{"label":"Скорость перезвона","value":0.0},{"label":"Аттестация по знанию продукта","value":3000.0},{"label":"Закрытие хотя бы 1 B2B-сделки","value":3000.0},{"label":"Всего зп, руб","value":130207.6},{"label":"Аванс","value":40000.0},{"label":"ЗП (в конце месяца)","value":90207.6},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"lena":[{"label":"Часы, офис","value":22.0},{"label":"Оклад, руб","value":5330.0},{"label":"Выручка по лидам","value":156367.0},{"label":"Конверсия по лидам","value":0.7},{"label":"Премия за конверсию","value":4691.01},{"label":"Выполнение плана","value":0.0},{"label":"Скорость ответа на обращения","value":0.0},{"label":"Скорость перезвона","value":0.0},{"label":"Аттестация по знанию продукта","value":0.0},{"label":"Закрытие хотя бы 1 B2B-сделки","value":0.0},{"label":"Всего зп, руб","value":10021.01},{"label":"Обучение","value":15000.0},{"label":"ЗП (15 июля!!)","value":10021.01},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 1 и 15","value":null}],"sasha":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":2000.0},{"label":"Именной отзыв","value":0.0},{"label":"Бонус за NPS выше 90","value":3000.0},{"label":"% записей в день активации > 50%","value":0.0},{"label":"Выполнение плана компании","value":5000.0},{"label":"Скорость ответа < 15 минут","value":0.0},{"label":"Аттестация по сервисной политике","value":3000.0},{"label":"Всего зп, руб","value":78000},{"label":"Аванс","value":30000.0},{"label":"ЗП (в конце месяца)","value":48000},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"yana":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":2000.0},{"label":"Именной отзыв","value":0.0},{"label":"Бонус за NPS выше 90","value":3000.0},{"label":"% записей в день активации > 50%","value":0.0},{"label":"Выполнение плана компании","value":5000.0},{"label":"Скорость ответа < 15 минут","value":5000.0},{"label":"Аттестация по сервисной политике","value":3000.0},{"label":"Всего зп, руб","value":83000},{"label":"Аванс","value":30000.0},{"label":"ЗП (в конце месяца)","value":53000},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null},{"label":"Яне тысяча компенсация за оплату по себесу","value":null}],"anya":[{"label":"Часы, офис","value":18.0},{"label":"Оклад, руб","value":8660.0},{"label":"Бонус за положительные отзывы","value":0.0},{"label":"Именной отзыв","value":0.0},{"label":"Бонус за NPS выше 90","value":0.0},{"label":"% записей в день активации > 50%","value":0.0},{"label":"Выполнение плана компании","value":0.0},{"label":"Скорость ответа < 15 минут","value":0.0},{"label":"Аттестация по сервисной политике","value":0.0},{"label":"Всего зп, руб","value":8660},{"label":"Обучение","value":15000.0},{"label":"ЗП (15 июля!!)","value":15000},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 1 и 15","value":null}]},"ИЮЛЬ":{"galya":[{"label":"Часы","value":120.0},{"label":"Оклад, руб","value":80000.0},{"label":"план по лидам","value":2000000.0},{"label":"выручка по лидам","value":2645603.0},{"label":"коэффициент","value":1.2},{"label":"% за выручку по лидам","value":132.28015},{"label":"Премия за лиды","value":24000},{"label":"План время ответа","value":15.0},{"label":"Факт время ответа","value":18.0},{"label":"коэффициент","value":0.5},{"label":"Премия за ответы","value":10000},{"label":"Выполнение плана","value":10000.0},{"label":"Личные продажи","value":92050.0},{"label":"% с личных продаж","value":2.0},{"label":"Бонус за личные продажи","value":1841},{"label":"Вычет за ДР","value":2200.0},{"label":"Всего зп, руб","value":123641},{"label":"Аванс","value":30000.0},{"label":"ЗП (7 августа)","value":93641},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"glafira":[{"label":"Часы, офис","value":168.0},{"label":"Оклад, руб","value":42666.0},{"label":"Выручка по лидам","value":1481837.0},{"label":"Конверсия по лидам","value":0.85},{"label":"Премия за конверсию","value":74091.85},{"label":"Выполнение плана","value":10000.0},{"label":"Скорость ответа на обращения","value":3000.0},{"label":"Скорость перезвона","value":0.0},{"label":"Аттестация по знанию продукта","value":3000.0},{"label":"Закрытие хотя бы 1 B2B-сделки","value":3000.0},{"label":"Вычет за ДР","value":1600.0},{"label":"Всего зп, руб","value":134157.85},{"label":"Аванс","value":40000.0},{"label":"ЗП (7 августа)","value":94157.85},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"lena":[{"label":"Часы, офис","value":157.0},{"label":"Оклад, руб","value":42666.0},{"label":"Выручка по лидам","value":1071716.0},{"label":"Конверсия по лидам","value":0.85},{"label":"Премия за конверсию","value":53585.8},{"label":"Выполнение плана","value":10000.0},{"label":"Скорость ответа на обращения","value":0.0},{"label":"Скорость перезвона","value":0.0},{"label":"Аттестация по знанию продукта","value":3000.0},{"label":"Закрытие хотя бы 1 B2B-сделки","value":0.0},{"label":"Вычет за ДР","value":1600.0},{"label":"Всего зп, руб","value":107651.8},{"label":"Аванс","value":40000.0},{"label":"ЗП (15 августа)","value":67651.8},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 1 (ав) и 15 (бонусы)","value":null}],"sasha":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":4000.0},{"label":"Именной отзыв","value":0.0},{"label":"Бонус за NPS выше 90","value":3000.0},{"label":"% записей в день активации > 50%","value":0.0},{"label":"Выполнение плана компании","value":5000.0},{"label":"Скорость ответа < 15 минут","value":0.0},{"label":"Аттестация по сервисной политике","value":3000.0},{"label":"Всего зп, руб","value":78400},{"label":"Вычет за ДР","value":1600.0},{"label":"Аванс","value":30000.0},{"label":"ЗП (7 августа)","value":48400},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"yana":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":4000.0},{"label":"Именной отзыв","value":0.0},{"label":"Бонус за NPS выше 90","value":3000.0},{"label":"% записей в день активации > 50%","value":0.0},{"label":"Выполнение плана компании","value":5000.0},{"label":"Скорость ответа < 15 минут","value":5000.0},{"label":"Аттестация по сервисной политике","value":3000.0},{"label":"Всего зп, руб","value":83400},{"label":"Вычет за ДР","value":1600.0},{"label":"Аванс","value":30000.0},{"label":"ЗП (7 августа)","value":53400},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 5 и 20","value":null}],"anya":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":4000.0},{"label":"Именной отзыв","value":0.0},{"label":"Бонус за NPS выше 90","value":3000.0},{"label":"% записей в день активации > 50%","value":0.0},{"label":"Выполнение плана компании","value":5000.0},{"label":"Скорость ответа < 15 минут","value":5000.0},{"label":"Аттестация по сервисной политике","value":3000.0},{"label":"Всего зп, руб","value":83400},{"label":"Вычет за ДР","value":1600.0},{"label":"Аванс","value":30000.0},{"label":"ЗП (15 августа)","value":53400},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 1 (ав) и 15 (бонусы)","value":null}]},"АВГУСТ":{"galya":[{"label":"Часы","value":160.0},{"label":"Оклад, руб","value":85000.0},{"label":"план по лидам","value":2500000.0},{"label":"выручка по лидам","value":1670000.0},{"label":"Перевыполнение","value":0.0},{"label":"Премия за лиды","value":0.0},{"label":"Отзывы","value":0.0},{"label":"План время ответа","value":15.0},{"label":"Факт время ответа","value":11.0},{"label":"Премия за ответы","value":6000.0},{"label":"Премия за конверсию","value":6000.0},{"label":"План по возвратам","value":0.0},{"label":"План (сайт)","value":0.0},{"label":"Продажи В2В","value":null},{"label":"% с продаж В2В","value":2.0},{"label":"Бонус за В2В","value":0},{"label":"Вычет за ДР","value":400.0},{"label":"Всего зп, руб","value":96600},{"label":"Аванс","value":40000.0},{"label":"ЗП (7 августа)","value":56600},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 10 и 25","value":null}],"glafira":[{"label":"Часы, офис","value":160.0},{"label":"Оклад, руб","value":40000.0},{"label":"Выручка по лидам","value":712441.0},{"label":"Конверсия по лидам","value":0.85},{"label":"Премия за конверсию","value":35622.05},{"label":"Выполнение плана","value":null},{"label":"Отзывы","value":0.0},{"label":"% ответов до 15 минут","value":4000.0},{"label":"Оценка качества (QA)","value":3000.0},{"label":"Подписка в ТГ","value":null},{"label":"Вычет за ДР","value":null},{"label":"Всего зп, руб","value":82622.05},{"label":"Аванс","value":40000.0},{"label":"ЗП (10 сентября)","value":42622.05},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 10 и 25","value":null}],"lena":[{"label":"Часы, офис","value":160.0},{"label":"Оклад, руб","value":40000.0},{"label":"Выручка по лидам","value":796439.0},{"label":"Конверсия по лидам","value":0.85},{"label":"Премия за конверсию","value":39821.95},{"label":"Выполнение плана","value":null},{"label":"Отзывы","value":0.0},{"label":"% ответов до 15 минут","value":6000.0},{"label":"Оценка качества (QA)","value":3000.0},{"label":"Подписка в ТГ","value":0.0},{"label":"Вычет за ДР","value":null},{"label":"Всего зп, руб","value":88821.95},{"label":"Аванс","value":40000.0},{"label":"ЗП (15 сентября)","value":48821.95},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 1 (аванс) и 15 (бонусы)","value":null}],"sasha":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":0.0},{"label":"Кол-во активаций","value":3000.0},{"label":"Время записи","value":3000.0},{"label":"% ответов до 15 минут","value":0.0},{"label":"Оценка качества (QA)","value":5000.0},{"label":"NPS выше 90","value":3000.0},{"label":"Выполнение плана компании","value":0.0},{"label":"Всего зп, руб","value":79000},{"label":"Вычет за ДР","value":null},{"label":"Аванс","value":30000.0},{"label":"ЗП (10 сентября)","value":49000},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 10 и 25","value":null}],"yana":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":null},{"label":"Кол-во активаций","value":3000.0},{"label":"Время записи","value":3000.0},{"label":"% ответов до 15 минут","value":7000.0},{"label":"Оценка качества (QA)","value":5000.0},{"label":"NPS выше 90","value":3000.0},{"label":"Выполнение плана компании","value":0.0},{"label":"Всего зп, руб","value":86000},{"label":"Вычет за ДР","value":null},{"label":"Аванс","value":30000.0},{"label":"ЗП (10 сентября)","value":56000},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 10 и 25","value":null}],"anya":[{"label":"Часы, офис","value":135.0},{"label":"Оклад, руб","value":65000.0},{"label":"Бонус за положительные отзывы","value":0.0},{"label":"Кол-во активаций","value":3000.0},{"label":"Время записи","value":3000.0},{"label":"% ответов до 15 минут","value":7000.0},{"label":"Оценка качества (QA)","value":5000.0},{"label":"NPS выше 90","value":3000.0},{"label":"Выполнение плана компании","value":0.0},{"label":"Всего зп, руб","value":86000},{"label":"Вычет за ДР","value":null},{"label":"Аванс","value":30000.0},{"label":"ЗП (15 сентября)","value":56000},{"label":"Отпускные, руб","value":null},{"label":"Даты выплат - 1 (аванс) и 15 (бонусы)","value":null}]}},"calcMonthOrder":["ИЮНЬ","ИЮЛЬ","АВГУСТ"]};
 
 /* ================= helpers ================= */
-const empById = id => DATA.employees.find(e => e.id === id);
+// Люди — из управленки (таблица employees): нанят/переведён/уволен в карточке — так же и здесь.
+// DATA.employees остался только как запасной вариант для старых строк, чьих людей в управленке нет.
+function payrollEmployees(){
+  const hr = HR.employees.filter(e => !isPlaceholder(e)).map(e => ({
+    id: e.id, full: e.full_name, short: e.short_name || e.full_name, role: payrollRole(e), title: e.title || '',
+    status: e.status, hired_at: e.hired_at, left_at: e.left_at,
+  }));
+  const ids = new Set(hr.map(e => e.id));
+  return hr.concat(DATA.employees.filter(e => !ids.has(e.id)));
+}
+const empById = id => payrollEmployees().find(e => e.id === id) || { id, full: id, short: id, role: '—', title: '' };
+// Работал ли сотрудник в этом месяце (расчётном периоде): не раньше выхода и не позже ухода
+function employedIn(empId, monthLabel, s = state){
+  const e = HR.employees.find(x => x.id === empId);
+  if (!e) return true;
+  const k = keyOfLabel(monthLabel, s && s.years);
+  return k >= hireKey(e) && k <= leaveCutoff(e, s);
+}
+const activePayrollEmployees = () => payrollEmployees().filter(e => e.status !== 'former');
 const roleLabel = emp => emp.title || emp.role;
 const MONTHS_GEN = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
 const RU_MONTHS = ['ЯНВАРЬ','ФЕВРАЛЬ','МАРТ','АПРЕЛЬ','МАЙ','ИЮНЬ','ИЮЛЬ','АВГУСТ','СЕНТЯБРЬ','ОКТЯБРЬ','НОЯБРЬ','ДЕКАБРЬ'];
@@ -163,7 +183,53 @@ const PRODUCT_DEPT_RULES = {
   // (вписывается вручную по отчёту). startMonth: договор действует с сентября 2026, первые выплаты — 1 и 15 октября.
   veronika:  { rows:[{label:'Фиксированная часть, руб', value:90000, include:true},{label:'Переменная часть (по отчёту)', value:0, include:true}],
     avans:45000,   avansMonthOffset:1, avansDay:1,  payMonthOffset:1, payDay:15, payAmount:45000, startMonth:'СЕНТЯБРЬ' },
+  // Контент-креатор, самозанятая Скрябина Д.А., договор № 1 от 01.09.2026, п. 7.3–7.4: аванс 20 000 не позднее 25-го
+  // текущего месяца, остаток по счёту — не позднее 10-го следующего. Сумма — по таблице «Мотивация креаторов»
+  // (оклад 35 000 + премия за просмотры до 42 000 + 60 ₽ за переход), поэтому остаток вписывается по факту.
+  diana:     { rows:[{label:'Оклад, руб', value:35000, include:true},{label:'Премия за просмотры', value:0, include:true},{label:'Премия за переходы (60 ₽)', value:0, include:true}],
+    avans:20000,   avansMonthOffset:0, avansDay:25, payMonthOffset:1, payDay:10, payAmount:0, startMonth:'СЕНТЯБРЬ' },
 };
+// Отдел заботы: расчёт по KPI ведётся вручную во вкладке «Структура», но даты и аванс известны заранее.
+// Без этого строки появлялись в графике только после «Сохранить в график выплат», и, например, аванс Лены
+// и Ани 1 октября просто отсутствовал. Аванс — в месяце расчёта, остаток — в следующем, сумма остатка 0 до расчёта.
+const CARE_RULES = {
+  galya:   { avans:40000, avansDay:25, payDay:10 },
+  glafira: { avans:40000, avansDay:25, payDay:10 },
+  sasha:   { avans:30000, avansDay:25, payDay:10 },
+  yana:    { avans:30000, avansDay:25, payDay:10 },
+  lena:    { avans:40000, avansDay:1,  payDay:15 },
+  anya:    { avans:30000, avansDay:1,  payDay:15 },
+};
+const CARE_FROM = 'СЕНТЯБРЬ';
+function seedCare(s){
+  const iso = (label, year, day) => `${year}-${String(RU_MONTHS.indexOf(label)+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+  RU_MONTHS.forEach((month, idx) => {
+    if (idx < RU_MONTHS.indexOf(CARE_FROM) || !s.calc[month]) return;
+    const year = s.years[month] || 2026;
+    Object.entries(CARE_RULES).forEach(([empId, rule]) => {
+      const c = s.calc[month][empId];
+      if (!c || !employedIn(empId, month, s)) return;
+      const next = addMonthsWithinYear(month, year, 1);
+      const avansDate = iso(month, year, rule.avansDay);
+      const payDate = next ? iso(next.label, next.year, rule.payDay) : null;
+      const tagged = type => s.schedule.some(it => it.emp === empId && it.type === type && it.sourceCalcMonth === month);
+      // даты в расчёте месяца, если пустые или ошибочно взяты из соседнего периода
+      if (!c.avansDate || monthLabelForDate(c.avansDate) !== month){ c.avansDate = avansDate; c.avansAmount = c.avansAmount || rule.avans; }
+      if (payDate && (!c.payDate || monthLabelForDate(c.payDate) !== next.label) && !tagged('ЗП')){ c.payDate = payDate; c.payAmount = 0; }
+      const ensure = (type, date, amount, note) => {
+        if (!date || tagged(type)) return;
+        const m2 = monthLabelForDate(date);
+        if (s.schedule.some(it => it.emp === empId && it.type === type && it.date === date)) return; // уже есть такая выплата
+        const old = s.schedule.find(it => it.emp === empId && it.type === type && !it.sourceCalcMonth && it.month === m2);
+        if (old){ old.sourceCalcMonth = month; return; }
+        if (!s.years[m2]) s.years[m2] = Number(date.slice(0,4));
+        s.schedule.push({id:genId('care'), emp:empId, date, amount, type, paid:false, note, month:m2, sourceCalcMonth:month});
+      };
+      ensure('Аванс', c.avansDate, c.avansAmount, null);
+      ensure('ЗП', c.payDate, c.payAmount, c.payAmount ? null : `сумма — по расчёту KPI за ${month.toLowerCase()}`);
+    });
+  });
+}
 // This tool models one calendar year at a time (see monthSortKey) — a rule that would land past
 // December simply isn't scheduled rather than silently mislabeled as next January.
 function addMonthsWithinYear(monthLabel, year, offset){
@@ -205,6 +271,7 @@ function seedProductDept(s){
       // Строки графика создаются с текущего месяца (историю не выдумываем); если у правила задан startMonth —
       // с него, даже если он уже прошёл: иначе первые выплаты по договору потеряются при открытии в следующем месяце.
       if (idx < (rule.startMonth ? RU_MONTHS.indexOf(rule.startMonth) : curIdx)) return;
+      if (!employedIn(empId, month, s)) return; // уволен или ещё не вышел — выплат за этот период нет
       const hasAvans = s.schedule.some(it => it.emp === empId && it.sourceCalcMonth === month && it.type === 'Аванс');
       const hasPay = s.schedule.some(it => it.emp === empId && it.sourceCalcMonth === month && it.type === 'ЗП');
       if (c.avansDate && !hasAvans){
@@ -489,8 +556,20 @@ state.schedule.forEach(it => {
 });
 seedMissingMonths(state);
 seedProductDept(state);
+seedCare(state);
 repairStolenPayTags(state);
+applyDepartures(state, HR.employees);
 saveState();
+}
+// Правка сотрудников в управленке (новый человек, перевод, увольнение) — сразу пересобираем выплаты
+function onStaffChanged(){
+  if (!state) return;
+  seedProductDept(state);
+  seedCare(state);
+  applyDepartures(state, HR.employees);
+  saveState();
+  populateEmpSelect(document.getElementById('apEmp'));
+  renderSchedule(); renderHistory(); renderStructure();
 }
 
 function ensureYearFor(monthLabel, iso){ if (!state.years[monthLabel]) state.years[monthLabel] = Number(iso.slice(0,4)); }
@@ -825,7 +904,9 @@ scheduleLedgerEl.addEventListener('change', e => {
 });
 
 function populateEmpSelect(sel){
-  sel.innerHTML = DATA.employees.map(e => `<option value="${e.id}">${e.full}</option>`).join('');
+  const cur = sel.value;
+  sel.innerHTML = activePayrollEmployees().sort((a, b) => a.full.localeCompare(b.full, 'ru')).map(e => `<option value="${e.id}">${e.full}</option>`).join('');
+  if (cur) sel.value = cur;
 }
 populateEmpSelect(document.getElementById('apEmp'));
 document.getElementById('apAddBtn').addEventListener('click', () => {
@@ -845,7 +926,7 @@ let historyState = { scope: 'team', sub: null };
 
 function historyEmployeesWithData(){
   const ids = new Set(state.schedule.map(it => it.emp));
-  return DATA.employees.filter(e => ids.has(e.id));
+  return payrollEmployees().filter(e => ids.has(e.id));
 }
 
 document.getElementById('historyScope').addEventListener('click', e => {
@@ -885,7 +966,7 @@ function computeHistorySeries(){
     segmentDefs = ROLES.filter(r => historyEmployeesWithData().some(e => e.role === r))
       .map(r => ({key:r, label:r, color:ROLE_COLORS[r] || '#888'}));
   } else {
-    segmentDefs = historyEmployeesWithData().map(e => ({key:e.id, label:e.short, color:EMP_COLORS[e.id] || '#888'}));
+    segmentDefs = historyEmployeesWithData().map(e => ({key:e.id, label:e.short, color:EMP_COLORS[e.id] || ROLE_COLORS[e.role] || '#888'}));
   }
 
   const months = allScheduleMonths();
@@ -1023,7 +1104,7 @@ function renderMonthStatusToggle(){
 function renderDeptTotal(){
   const wrap = document.getElementById('deptTotalCard');
   const monthCalc = state.calc[calcMonth] || {};
-  const empIds = Object.keys(monthCalc);
+  const empIds = Object.keys(monthCalc).filter(id => employedIn(id, calcMonth));
   if (!empIds.length){ wrap.innerHTML = '<div class="empty-state">Нет данных за этот месяц — заполните показатели ниже</div>'; return; }
   let total = 0, avans = 0, pay = 0;
   empIds.forEach(id => {
@@ -1201,7 +1282,7 @@ function renderStructure(){
   const monthCalc = state.calc[calcMonth] || {};
   const visibleRoles = structureRoleFilter === 'all' ? ROLES : ROLES.filter(r => r === structureRoleFilter);
   const groups = visibleRoles.map(role => {
-    const emps = DATA.employees.filter(e => e.role === role && monthCalc[e.id]);
+    const emps = payrollEmployees().filter(e => e.role === role && monthCalc[e.id] && employedIn(e.id, calcMonth));
     if (!emps.length) return '';
     return `<div class="role-section"><h2>${role}</h2><div class="calc-grid">${emps.map(renderCalcCard).join('')}</div></div>`;
   }).join('');
@@ -1218,4 +1299,5 @@ export async function initPayroll(){
   renderHistory();
   renderStructure();
   startRealtime();
+  onHRChange(key => { if (key === 'employees' || key === 'departments') onStaffChanged(); });
 }

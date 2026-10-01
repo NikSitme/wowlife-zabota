@@ -1,7 +1,8 @@
 // Оргструктура, список сотрудников, карточка сотрудника.
 import { HR, esc, isAdmin, empById, deptById, empName, deptName, activeEmployees,
-         fmtDate, tenure, STATUS_LABEL, CONTRACT_LABEL, upsert, remove, reportError, todayISO } from './db.js';
+         fmtDate, tenure, STATUS_LABEL, CONTRACT_LABEL, upsert, remove, reportError, todayISO, setSync } from './db.js';
 import { openForm, openDrawer, closeDrawer, linkOrDash, pill } from './ui.js';
+import { syncDeparturesToPayroll } from './staff.js';
 
 let empFilters = { q: '', dept: 'all', status: 'active' };
 let openedId = null, openedTab = 'profile';
@@ -292,6 +293,7 @@ export function employeeForm(e){
       if (v.status === 'former' && !v.left_at) v.left_at = todayISO();
       if (v.status !== 'former') v.left_at = null;
       await upsert('employees', v);
+      if (v.status === 'former') await departToPayroll();
       renderAll(); openEmployee(v.id);
     },
     onDelete: e ? async () => {
@@ -305,10 +307,21 @@ export function employeeForm(e){
 }
 
 async function fireEmployee(e){
-  const date = prompt('Дата ухода (ГГГГ-ММ-ДД):', todayISO());
+  const date = prompt('Дата ухода (ГГГГ-ММ-ДД).\nНеоплаченные выплаты за месяцы после ухода уберутся из реестра выплат, выплата за месяц ухода останется с пометкой «окончательный расчёт».', todayISO());
   if (!date) return;
-  try { await upsert('employees', { id: e.id, status: 'former', left_at: date, support_role: null }); renderAll(); openEmployee(e.id); }
+  try {
+    await upsert('employees', { id: e.id, status: 'former', left_at: date, support_role: null });
+    await departToPayroll();
+    renderAll(); openEmployee(e.id);
+  }
   catch(err){ reportError(err, 'Не удалось сохранить'); }
+}
+// Уход сотрудника → реестр выплат (одна сущность: увольнение в карточке убирает и его будущие выплаты)
+async function departToPayroll(){
+  try {
+    const n = await syncDeparturesToPayroll();
+    if (n) setSync('ok', 'Реестр выплат обновлён: убраны выплаты после ухода');
+  } catch(err){ reportError(err, 'Реестр выплат'); }
 }
 
 export function renderAll(){ renderOrg(); renderEmployees(); refreshCard(); }
