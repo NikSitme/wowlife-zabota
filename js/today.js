@@ -2,6 +2,7 @@
 import { HR, sb, esc, isAdmin, empById, empName, deptName, activeEmployees, fmtDate, todayISO, MONTHS_GEN, MONTHS_NOM } from './db.js';
 import { isPlaceholder, isVacancy } from './people.js';
 import { checkRules, shiftsOn, monthHasShifts, supportStaff, gotoMonth } from './schedule.js';
+import { awayToday, overlaps } from './vacations.js';
 
 const DAY = 86400000;
 const parse = iso => new Date(iso + 'T00:00:00');
@@ -76,6 +77,23 @@ export async function renderToday(){
       tone: items.length ? 'warn' : 'ok', title: 'График поддержки', value: items.length || '✓',
       sub: items.length ? 'Нарушения правил до конца месяца' : '', items, empty: 'Правила соблюдены, следующий месяц под контролем',
       goto: 'schedule', gotoLabel: 'График',
+    }));
+  }
+
+  /* ---- 2а. отпуска ---- */
+  if (!HR.missing.vacations){
+    const away = awayToday();
+    const soon = HR.vacations.filter(v => !v.approx && v.start_date > today && (parse(v.start_date) - t0) / DAY <= 14).sort((a, b) => a.start_date.localeCompare(b.start_date));
+    const ov = overlaps(now.getFullYear()).filter(o => o.end >= today && (parse(o.start) - t0) / DAY <= 45);
+    const items = [
+      ...away.map(v => empLink(v.employee_id, `в отпуске до ${dm(v.end_date)}`)),
+      ...soon.map(v => empLink(v.employee_id, `уходит ${dm(v.start_date)} на ${Math.round((parse(v.end_date) - parse(v.start_date)) / DAY) + 1} дн.`)),
+      ...ov.map(o => `<li><b>Пересечение:</b> ${esc(empName(o.a.employee_id))} и ${esc(empName(o.b.employee_id))} <span class="muted">${dm(o.start)}${o.start !== o.end ? ' — ' + dm(o.end) : ''}</span></li>`),
+    ];
+    cards.push(card({
+      tone: ov.length ? 'warn' : '', title: 'Отпуска', value: away.length,
+      sub: away.length ? 'сейчас в отпуске' : '', items, empty: 'Сейчас никто не в отпуске, в ближайшие 2 недели никто не уходит',
+      goto: 'vacations', gotoLabel: 'График отпусков',
     }));
   }
 

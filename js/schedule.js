@@ -25,6 +25,8 @@ export function checkRules(y = cur.y, m = cur.m){
     const onDay = shifts.filter(s => s.day === day);
     if (!onDay.some(s => s.kind === 'senior')) issues.push({ day, text: `${d}: нет старшего смены` });
     if (onDay.length < 2) issues.push({ day, text: `${d}: меньше двух человек на смене` });
+    onDay.filter(s => HR.vacations.some(v => v.employee_id === s.employee_id && v.start_date <= day && v.end_date >= day))
+      .forEach(s => { const e = HR.employees.find(x => x.id === s.employee_id); issues.push({ day, emp: s.employee_id, text: `${d}: ${e ? (e.short_name || e.full_name) : s.employee_id} на смене во время отпуска` }); });
   }
   staff.filter(e => e.support_role === 'line').forEach(e => {
     const days = shifts.filter(s => s.employee_id === e.id).map(s => Number(s.day.slice(8))).sort((a, b) => a - b);

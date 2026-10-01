@@ -157,11 +157,11 @@
 .steps{font-size:13.5px; color:var(--ink-soft); margin:0; padding-left:20px; display:grid; gap:6px;}
 .reg-link{display:block; width:100%; text-align:left; font:inherit; background:transparent; border:0; border-bottom:1px solid var(--line); padding:10px 0; color:inherit;}
 .reg-link:last-child{border-bottom:0;}
-.reg-link .c{font-family:var(--font-mono); font-size:11px; color:var(--warn);}
+.reg-link .c{font-family:var(--font-mono); font-size:11px; color:var(--accent-ink); font-weight:600;}
 .reg-link .t2{font-size:13.5px; font-weight:600; margin-top:2px;}
 
 /* ---------- модальная форма ---------- */
-.modal{position:fixed; inset:0; z-index:60; background:rgba(20,22,26,.55); display:flex; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto;}
+.modal{position:fixed; inset:0; z-index:60; background:rgba(11,11,15,.55); display:flex; align-items:flex-start; justify-content:center; padding:40px 16px; overflow-y:auto;}
 .modal-card{background:var(--surface); color:var(--ink); border-radius:var(--radius); box-shadow:var(--shadow); width:100%; max-width:760px; padding:22px 26px 26px;}
 .modal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
 .modal-head h2{font-family:var(--font-display); font-size:19px; margin:0;}
@@ -200,23 +200,23 @@
 .shift-table .day-col{width:30px; min-width:30px; height:36px;}
 .shift-table td.day-col[role=button]{cursor:pointer;}
 .shift-table td.day-col[role=button]:hover{background:var(--surface-2);}
-.shift-table .weekend{background:color-mix(in srgb, var(--warn-soft) 40%, transparent);}
+.shift-table .weekend{background:var(--surface-2);}
 .shift-table th.today{box-shadow:inset 0 -3px 0 var(--accent);}
 .shift-table th.bad{color:var(--danger); background:var(--danger-soft);}
 .shift-table td.on{font-weight:700; color:#fff;}
-.shift-table td.on.line{background:#8A6FA6;}
-.shift-table td.on.senior{background:#4E7FA6;}
+.shift-table td.on.line{background:#1FA3BD;}
+.shift-table td.on.senior{background:#655DA6;}
 .shift-table .sum-col{font-family:var(--font-mono); font-weight:600; padding:0 10px; min-width:60px;}
 .shift-table .sum-col.bad{color:var(--danger); background:var(--danger-soft);}
-.shift-table tr.senior .emp-col{border-left:4px solid #4E7FA6;}
-.shift-table tr.line .emp-col{border-left:4px solid #8A6FA6;}
+.shift-table tr.senior .emp-col{border-left:4px solid #655DA6;}
+.shift-table tr.line .emp-col{border-left:4px solid #1FA3BD;}
 
 /* ---------- регламенты ---------- */
 .regs{display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:12px;}
 .reg{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:6px;}
 .reg.editable{cursor:pointer;}
 .reg.editable:hover{border-color:var(--accent);}
-.reg .code{font-family:var(--font-mono); font-size:11.5px; color:var(--warn); font-weight:600;}
+.reg .code{font-family:var(--font-mono); font-size:11.5px; color:var(--accent-ink); font-weight:600;}
 .reg .t{font-weight:700; font-size:14.5px; line-height:1.3;}
 .reg .d{font-size:13px; color:var(--ink-soft); line-height:1.5;}
 .reg .f{font-size:11.5px; color:var(--ink-faint); display:flex; gap:10px; flex-wrap:wrap; font-family:var(--font-mono);}
@@ -269,3 +269,104 @@
 .p-foot{display:flex; align-items:center; gap:18px; padding:14px 22px 26px; border-top:1px solid var(--line);}
 .danger-link{color:var(--danger); text-decoration:underline; text-underline-offset:3px;}
 .danger-link:hover{color:var(--danger); opacity:.8;}
+
+/* =====================================================================
+   Фирменный слой WOWlife (DESIGN.md): баннер, типографика, пилюли, отпуска
+   ===================================================================== */
+
+/* ---------- шапка: бирюзовая крышка с буквами WOWOW ---------- */
+.topbar{flex-direction:column; align-items:stretch; gap:14px;}
+.banner{
+  position:relative; overflow:hidden; isolation:isolate;
+  background:var(--banner); color:#fff; border-radius:28px;
+  padding:26px 30px; min-height:132px; display:flex; align-items:center; gap:26px; flex-wrap:wrap;
+}
+.wow-letters{
+  position:absolute; inset:-14px -40px; z-index:-1; display:flex; flex-direction:column; justify-content:center;
+  font-family:var(--font-display); font-weight:900; font-size:74px; line-height:.86; letter-spacing:-.01em;
+  color:var(--banner-letters); white-space:nowrap; user-select:none; pointer-events:none;
+}
+.wow-letters span:nth-child(even){margin-left:-46px;}
+.banner-logo{height:42px; width:auto; flex:none; display:block;}
+.banner-title{display:flex; flex-direction:column; gap:4px; min-width:0;}
+.banner-title h1{font-family:var(--font-display); font-weight:800; font-size:26px; line-height:1; margin:0; text-transform:uppercase; letter-spacing:.01em; color:#fff;}
+.banner-title p{margin:0; font-size:13px; font-weight:500; color:rgba(255,255,255,.88);}
+.banner-title .link-btn{color:#fff; text-decoration:underline; text-decoration-style:solid;}
+.topbar .tabs{align-self:flex-start; background:var(--surface); border-color:var(--line);}
+.theme-toggle{z-index:41;}
+@media (max-width:640px){
+  .banner{padding:20px 20px; min-height:108px; gap:12px; border-radius:22px;}
+  .banner-logo{height:30px;}
+  .banner-title h1{font-size:20px;}
+  .wow-letters{font-size:56px;}
+}
+
+/* ---------- типографика: Unbounded — только заголовки страниц и секций ---------- */
+.sec-title, .role-section > h2, .ledger-month-head h2, .cal-month-title, .guide-section > h2, .vac-dept h3{
+  font-family:var(--font-display); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em;
+}
+.today-head h2{font-family:var(--font-display); font-weight:700; font-size:22px; letter-spacing:-.01em;}
+.sched-month{font-family:var(--font-display); font-size:15px; font-weight:700;}
+.p-hd .nm{font-family:var(--font-display); font-size:18px; font-weight:700; letter-spacing:-.01em;}
+.modal-head h2, .setup-card h2{font-family:var(--font-display); font-size:16px; font-weight:700;}
+.dept-head h3, .proc-card h3, .calc-card header h3, .guide-card h3{font-family:var(--font-body); font-weight:700; font-size:15px;}
+.org-node.root .org-title{font-family:var(--font-display); font-size:14px; text-transform:uppercase; letter-spacing:.02em;}
+.signal-value, .stat-tile .stat-value, .dept-total-card .big-value, .calc-total-live .v{font-weight:700; font-variant-numeric:tabular-nums;}
+.signal-value{font-size:26px;}
+
+/* ---------- пилюли и кнопки ---------- */
+.sync-btn{border-radius:999px; padding:8px 16px; font-size:13px;}
+.mini-btn{border-radius:999px; padding:7px 14px;}
+.mini-btn.danger, .icon-btn:hover{color:var(--danger);}
+.status-pill, .type-pill, .role-badge, .pill{border-radius:999px;}
+.month-select, .chip, .tabs, .segmented{border-radius:999px;}
+.form-field input, .form-field textarea, .form-field select, .auth-card input, .mini-input,
+.add-payment-form select, .add-payment-form input{border-radius:var(--radius-sm);}
+
+/* ---------- оргструктура: опер. директор — violet-плитка ---------- */
+.org-node{border-radius:14px;}
+.org-node.root{background:var(--accent); border-color:var(--accent); color:var(--on-accent);}
+.org-node.root .org-name, .org-node.root .org-count{color:var(--on-accent); opacity:.85;}
+.org-node.root:hover{border-color:var(--accent); filter:brightness(1.05);}
+.org-node.group .org-title{font-family:var(--font-display); font-size:11px;}
+
+/* ---------- сигналы «Сегодня» ---------- */
+.signal{border-top-width:4px;}
+.signal.ok{border-top-color:var(--accent);}
+
+/* ---------- график отпусков ---------- */
+.vac-legend{display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; font-size:12.5px; color:var(--ink-soft);}
+.vac-legend .vac-bar{position:static; display:inline-block; width:22px; height:10px; margin-left:6px; cursor:default;}
+[data-vac-add]{margin-left:auto;}
+.vac-summary{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:12px; margin-bottom:18px;}
+.vac-tile{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:14px 16px; display:flex; flex-direction:column; gap:4px;}
+.vac-tile-label{font-size:11.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-faint); font-weight:700;}
+.vac-tile-value{font-size:26px; font-weight:700; font-variant-numeric:tabular-nums;}
+.vac-tile-list{font-size:13px; line-height:1.7;}
+.vac-board{background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:10px 16px 16px; overflow-x:auto;}
+.vac-dept{min-width:760px;}
+.vac-dept h3{margin:16px 0 6px; color:var(--ink-faint);}
+.vac-row{display:grid; grid-template-columns:190px 1fr 86px; align-items:center; gap:12px; min-width:760px; min-height:38px; border-bottom:1px solid var(--line);}
+.vac-dept .vac-row:last-child{border-bottom:none;}
+.vac-scale{position:sticky; top:0; min-height:28px; border-bottom:1px solid var(--line-strong); background:var(--surface); z-index:2;}
+.vac-who{display:flex; flex-direction:column; min-width:0; line-height:1.25;}
+.vac-who .link-btn{font-weight:600; text-decoration:none; text-align:left;}
+.vac-who .muted{font-size:11.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+.vac-track{position:relative; height:26px;}
+.vac-scale .vac-track{height:28px;}
+.vac-month{position:absolute; top:6px; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-faint); padding-left:5px; overflow:hidden; white-space:nowrap;}
+.vac-grid{position:absolute; inset:-6px 0; pointer-events:none;}
+.vac-grid span{position:absolute; top:0; bottom:0; width:1px; background:var(--line);}
+.vac-today{position:absolute; top:-6px; bottom:-6px; width:2px; margin-left:-1px; background:var(--danger); border-radius:2px;}
+.vac-count{text-align:right; font-size:13px; font-variant-numeric:tabular-nums; color:var(--ink-soft);}
+.vac-count b{color:var(--ink);}
+.vac-count .over b, .vac-count .over{color:var(--danger);}
+.vac-bar{
+  position:absolute; top:4px; height:18px; min-width:5px; border-radius:999px; border:2px solid var(--accent);
+  background:var(--accent); cursor:pointer; padding:0; appearance:none; transition:filter .15s, transform .15s;
+}
+.vac-bar:hover{filter:brightness(1.1); transform:translateY(-1px);}
+.vac-bar.plan{background:var(--warn-soft); border-color:var(--warn);}
+.vac-bar.approx{background:repeating-linear-gradient(135deg, var(--accent) 0 4px, transparent 4px 8px); }
+.vac-bar.other{background:var(--plan); border-color:var(--plan);}
+.vac-bar.plan.other{background:var(--plan-soft);}

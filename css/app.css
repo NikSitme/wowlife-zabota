@@ -1,37 +1,42 @@
 /* Общие стили управленки WOWlife. Перенесено из реестра выплат. */
 
+  /* Токены — по DESIGN.md (айдентика WOWlife): Paper/Ink, violet — акцент, sky — внимание, magenta — просрочено, orchid — аванс/план */
   :root{
-    --ink:#1E2328; --ink-soft:#5B6472; --ink-faint:#8A93A0;
-    --paper:#F4F5F7; --surface:#FFFFFF; --surface-2:#F8F9FB;
-    --line:#E1E4E9; --line-strong:#C7CCD4;
-    --accent:#2E5AAC; --accent-ink:#1E3E7A; --accent-soft:#E3EAF8;
-    --warn:#A0701F; --warn-soft:#F3E6CE;
-    --danger:#A83B34; --danger-soft:#F5DEDB;
-    --shadow:0 1px 2px rgba(20,22,26,.06), 0 6px 18px rgba(20,22,26,.06);
-    --radius:12px; --radius-sm:8px;
-    --font-display:'Bitter',Georgia,'Times New Roman',serif;
-    --font-body:'Public Sans',-apple-system,'Segoe UI',sans-serif;
-    --font-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,monospace;
+    --ink:#0B0B0F; --ink-soft:#4A4A57; --ink-faint:#7C7C8A;
+    --paper:#F5F5F7; --surface:#FFFFFF; --surface-2:#EFEFF5;
+    --line:#E4E4EC; --line-strong:#CFCFDB;
+    --accent:#655DA6; --accent-ink:#4A4391; --accent-soft:#ECEBFA;
+    --warn:#127F98; --warn-soft:#DDF6FC;
+    --danger:#D0246B; --danger-soft:#FFE4EF;
+    --plan:#9A3CC8; --plan-soft:#F5E6FF;
+    --shadow:0 1px 2px rgba(11,11,15,.04), 0 4px 14px rgba(11,11,15,.05);
+    --banner:#00CED9; --banner-letters:#2AD6E0; --on-accent:#FFFFFF;
+    --radius:20px; --radius-sm:12px;
+    --font-display:'Unbounded','Arial Black',sans-serif;
+    --font-body:'Onest',-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'Onest',-apple-system,'Segoe UI',sans-serif; /* цифры — Onest с табличными цифрами, моноширинного шрифта нет */
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --ink:#E8EAED; --ink-soft:#A7AEB8; --ink-faint:#767E89;
-      --paper:#14161A; --surface:#1B1E23; --surface-2:#22262C;
-      --line:#2C3038; --line-strong:#3C424C;
-      --accent:#6C93E0; --accent-ink:#AEC4EF; --accent-soft:rgba(108,147,224,.15);
-      --warn:#DDA75A; --warn-soft:rgba(221,167,90,.15);
-      --danger:#E1837A; --danger-soft:rgba(225,131,122,.15);
-      --shadow:0 1px 2px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.3);
+      --ink:#FFFFFF; --ink-soft:#B9B9C6; --ink-faint:#7C7C8A;
+      --paper:#0B0B0F; --surface:#17171F; --surface-2:#1F1F2A;
+      --line:#2A2A35; --line-strong:#3A3A48;
+      --accent:#9B9BE4; --accent-ink:#C5C5F2; --accent-soft:rgba(155,155,228,.16);
+      --warn:#30CBE9; --warn-soft:rgba(48,203,233,.14);
+      --danger:#FB4591; --danger-soft:rgba(251,69,145,.15);
+      --plan:#D36BFF; --plan-soft:rgba(211,107,255,.15);
+      --shadow:none; --on-accent:#0B0B0F;
     }
   }
   :root[data-theme="dark"]{
-    --ink:#E8EAED; --ink-soft:#A7AEB8; --ink-faint:#767E89;
-    --paper:#14161A; --surface:#1B1E23; --surface-2:#22262C;
-    --line:#2C3038; --line-strong:#3C424C;
-    --accent:#6C93E0; --accent-ink:#AEC4EF; --accent-soft:rgba(108,147,224,.15);
-    --warn:#DDA75A; --warn-soft:rgba(221,167,90,.15);
-    --danger:#E1837A; --danger-soft:rgba(225,131,122,.15);
-    --shadow:0 1px 2px rgba(0,0,0,.35), 0 6px 18px rgba(0,0,0,.3);
+    --ink:#FFFFFF; --ink-soft:#B9B9C6; --ink-faint:#7C7C8A;
+    --paper:#0B0B0F; --surface:#17171F; --surface-2:#1F1F2A;
+    --line:#2A2A35; --line-strong:#3A3A48;
+    --accent:#9B9BE4; --accent-ink:#C5C5F2; --accent-soft:rgba(155,155,228,.16);
+    --warn:#30CBE9; --warn-soft:rgba(48,203,233,.14);
+    --danger:#FB4591; --danger-soft:rgba(251,69,145,.15);
+    --plan:#D36BFF; --plan-soft:rgba(211,107,255,.15);
+    --shadow:none; --on-accent:#0B0B0F;
   }
 
   *{box-sizing:border-box;}
@@ -78,7 +83,7 @@
     transition:background .15s ease, color .15s ease;
   }
   .tab-btn:hover{color:var(--ink);}
-  .tab-btn.active{background:var(--accent); color:#fff;}
+  .tab-btn.active{background:var(--accent); color:var(--on-accent);}
   .tab-btn:focus-visible, button:focus-visible, .status-pill:focus-visible, input:focus-visible{
     outline:2px solid var(--accent); outline-offset:2px;
   }
@@ -105,7 +110,7 @@
     transition:all .15s ease;
   }
   .chip:hover{border-color:var(--accent); color:var(--ink);}
-  .chip.active{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .chip.active{background:var(--accent); border-color:var(--accent); color:var(--on-accent);}
 
   /* ---------- single-button dropdown select (e.g. month pickers) ---------- */
   .select-wrap{position:relative; display:inline-flex;}
@@ -167,7 +172,7 @@
     appearance:none; cursor:pointer; font-family:var(--font-body); font-weight:600; font-size:12.5px;
     padding:7px 14px; border-radius:999px; border:1px solid transparent; transition:all .15s ease;
   }
-  .status-toggle.is-plan{background:var(--warn-soft); color:var(--warn);}
+  .status-toggle.is-plan{background:var(--plan-soft); color:var(--plan);}
   .status-toggle.is-fact{background:var(--accent-soft); color:var(--accent-ink);}
 
   /* ---------- ledger (schedule table) ---------- */
@@ -215,7 +220,7 @@
     font-size:12px; font-weight:600; padding:3px 10px; border-radius:999px; display:inline-block;
   }
   .type-pill.zp{background:var(--accent-soft); color:var(--accent-ink);}
-  .type-pill.avans{background:var(--warn-soft); color:var(--warn);}
+  .type-pill.avans{background:var(--plan-soft); color:var(--plan);}
   .type-pill.other{background:var(--surface-2); color:var(--ink-soft);}
   .status-pill{
     appearance:none; cursor:pointer; width:100%; text-align:left; font-family:var(--font-body);
@@ -256,7 +261,7 @@
   .cal-legend .item{display:flex; align-items:center; gap:7px;}
   .cal-legend .swatch{width:12px; height:12px; border-radius:3px; flex:none; border-left:3px solid transparent;}
   .cal-legend .swatch.zp{border-left-color:var(--accent); background:var(--surface-2);}
-  .cal-legend .swatch.avans{border-left-color:var(--warn); background:var(--surface-2);}
+  .cal-legend .swatch.avans{border-left-color:var(--plan); background:var(--surface-2);}
   .cal-legend .swatch.paid{background:var(--accent-soft); border-left-color:var(--accent);}
   .cal-legend .swatch.soon{background:var(--warn-soft); border-left-color:var(--warn);}
   .cal-legend .swatch.overdue{background:var(--danger-soft); border-left-color:var(--danger);}
@@ -299,7 +304,7 @@
   .cal-pmt:hover{filter:brightness(.96);}
   .cal-pmt .cal-pmt-amt{font-family:var(--font-mono); font-variant-numeric:tabular-nums; flex:none;}
   .cal-pmt.zp{border-left-color:var(--accent);}
-  .cal-pmt.avans{border-left-color:var(--warn);}
+  .cal-pmt.avans{border-left-color:var(--plan);}
   .cal-pmt.is-paid{background:var(--accent-soft); color:var(--accent-ink); opacity:.8;}
   .cal-pmt.is-overdue{background:var(--danger-soft); color:var(--danger);}
   .cal-pmt.is-soon{background:var(--warn-soft); color:var(--warn);}
@@ -337,7 +342,7 @@
   .data-table tfoot td{font-weight:700; border-top:2px solid var(--line-strong); border-bottom:none;}
   .paid-badge{font-family:var(--font-body); font-weight:600; font-size:12px; padding:2px 8px; border-radius:999px;}
   .paid-badge.full{background:var(--accent-soft); color:var(--accent-ink);}
-  .paid-badge.partial{background:var(--warn-soft); color:var(--warn);}
+  .paid-badge.partial{background:var(--plan-soft); color:var(--plan);}
   .paid-badge.none{background:var(--surface-2); color:var(--ink-faint);}
 
   /* ---------- structure tab ---------- */
@@ -410,7 +415,7 @@
   .payout-actions{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
   .sync-btn{
     appearance:none; cursor:pointer; font-family:var(--font-body); font-weight:600; font-size:12.5px;
-    padding:7px 13px; border-radius:var(--radius-sm); border:none; background:var(--accent); color:#fff;
+    padding:7px 13px; border-radius:var(--radius-sm); border:none; background:var(--accent); color:var(--on-accent);
     transition:opacity .15s ease;
   }
   .sync-btn:hover{opacity:.9;}
@@ -427,7 +432,7 @@
     display:flex; align-items:center; gap:10px;
   }
   .guide-section > h2 .step-num{
-    font-family:var(--font-mono); font-size:12px; font-weight:600; color:#fff;
+    font-family:var(--font-mono); font-size:12px; font-weight:600; color:var(--on-accent);
     background:var(--accent); width:23px; height:23px; border-radius:50%;
     display:inline-flex; align-items:center; justify-content:center; flex:none;
   }

@@ -4,6 +4,7 @@ import { renderAll as renderPeople, refreshCard, fitOrg } from './people.js';
 import { renderSchedule } from './schedule.js';
 import { renderRegs, renderProcs } from './docs.js';
 import { renderToday } from './today.js';
+import { renderVacations } from './vacations.js';
 
 /* ---------- тема ---------- */
 const THEME_KEY = 'payroll_care_theme_v1';
@@ -23,7 +24,7 @@ themeToggleBtn.addEventListener('click', () => setTheme(effectiveTheme() === 'da
 try { const t = localStorage.getItem(THEME_KEY); if (t === 'light' || t === 'dark') setTheme(t); else syncThemeIcon(); } catch(e){ syncThemeIcon(); }
 
 /* ---------- навигация ---------- */
-const PAGES = ['today', 'org', 'people', 'schedule', 'regs', 'procs', 'payroll', 'help'];
+const PAGES = ['today', 'org', 'people', 'schedule', 'vacations', 'regs', 'procs', 'payroll', 'help'];
 let currentPage = 'today';
 function showPage(p){
   if (!PAGES.includes(p)) p = 'today';
@@ -42,8 +43,9 @@ document.getElementById('mainNav').addEventListener('click', e => { const b = e.
 /* ---------- отрисовка всего ---------- */
 function renderPage(key){
   if (currentPage === 'today') renderToday();
-  if (!key || key === 'employees' || key === 'departments'){ renderPeople(); renderSchedule(); renderRegs(); renderProcs(); }
+  if (!key || key === 'employees' || key === 'departments'){ renderPeople(); renderSchedule(); renderVacations(); renderRegs(); renderProcs(); }
   else if (key === 'shifts') renderSchedule();
+  else if (key === 'vacations'){ renderVacations(); renderSchedule(); refreshCard(); }
   else if (key === 'regulations'){ renderRegs(); refreshCard(); }
   else if (key === 'processes'){ renderProcs(); refreshCard(); }
 }

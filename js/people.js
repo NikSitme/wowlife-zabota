@@ -3,6 +3,7 @@ import { HR, esc, isAdmin, empById, deptById, empName, deptName, activeEmployees
          fmtDate, tenure, STATUS_LABEL, CONTRACT_LABEL, upsert, remove, reportError, todayISO, setSync } from './db.js';
 import { openForm, openDrawer, closeDrawer, linkOrDash, pill } from './ui.js';
 import { syncDeparturesToPayroll } from './staff.js';
+import { vacationStats, vacationsOf, YEAR_NORM } from './vacations.js';
 
 let empFilters = { q: '', dept: 'all', status: 'active' };
 let openedId = null, openedTab = 'profile';
@@ -92,7 +93,8 @@ export function fitOrg(){
 let fitTimer = null;
 window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitOrg, 120); });
 
-const PALETTE = ['#2E5AAC','#B8842E','#2F6F5E','#8A6FA6','#B2555A','#5E8C4A','#7A5D8A','#9B6A3E','#4E6B8E','#5A7CA6'];
+// Цвета отделов — фирменная палитра WOWlife по порядку отделов (DESIGN.md → Colors)
+const PALETTE = ['#655DA6','#1FA3BD','#D36BFF','#9B9BE4','#00A9B5','#A94FD4','#5E7CE2','#F2408C','#7C7C8A','#30CBE9'];
 function deptColor(id){
   const idx = HR.departments.findIndex(d => d.id === id);
   return PALETTE[(idx < 0 ? 9 : idx) % PALETTE.length];
@@ -193,6 +195,17 @@ export function openEmployee(id, tab){
 }
 export function refreshCard(){ if (openedId && !document.getElementById('drawer').hidden) renderCard(); }
 
+// Отпуск в карточке: дни за год из нормы и ближайшие/текущие периоды
+function vacationHtml(e){
+  if (HR.missing.vacations) return '';
+  const y = new Date().getFullYear(), st = vacationStats(e, y), t = todayISO();
+  const list = vacationsOf(e.id).filter(v => v.end_date >= t).slice(0, 3);
+  const fmt = v => `${fmtDate(v.start_date)} — ${fmtDate(v.end_date)}${v.kind !== 'отпуск' ? ` (${v.kind})` : ''}${v.status === 'план' ? ' · план' : ''}`;
+  return `<dt>Отпуск ${y}</dt><dd>${st.paid ? `${st.used} из ${st.limit} дн.${e.vacation_carryover ? ` <span class="muted">(${YEAR_NORM} + ${e.vacation_carryover} остаток)</span>` : ''}` : `${st.used} дн. <span class="muted">(ИП/СЗ — без отпуска по ТК)</span>`}
+    ${list.length ? `<br><span class="muted">${list.map(fmt).join('<br>')}</span>` : ''}
+    ${isAdmin() ? `<br><button class="link-btn" data-vac-add-for="${e.id}">+ добавить отпуск</button>` : ''}</dd>`;
+}
+
 function renderCard(){
   const e = empById(openedId);
   if (!e){ closeDrawer(); return; }
@@ -213,6 +226,7 @@ function renderCard(){
         <dt>Стаж</dt><dd>${e.hired_at ? tenure(e.hired_at, e.left_at) : '—'}</dd>
         ${e.probation_end ? `<dt>Испытательный срок</dt><dd>до ${fmtDate(e.probation_end)}${e.probation_end < todayISO() ? ' · завершён' : ''}</dd>` : ''}
         <dt>Режим работы</dt><dd>${esc(e.work_mode || '—')}</dd>
+        ${vacationHtml(e)}
         ${e.birthday ? `<dt>День рождения</dt><dd>${fmtDate(e.birthday).replace(/ \d{4}$/, '')}</dd>` : ''}
         ${e.support_role ? `<dt>В поддержке</dt><dd>${e.support_role === 'senior' ? 'старший смены' : 'первая линия'}</dd>` : ''}
       </dl>

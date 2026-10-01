@@ -45,9 +45,9 @@ function todayMonthLabel(){
 }
 const MONTH_SHORT = {'ЯНВАРЬ':'Янв','ФЕВРАЛЬ':'Фев','МАРТ':'Мар','АПРЕЛЬ':'Апр','МАЙ':'Май','ИЮНЬ':'Июн','ИЮЛЬ':'Июл','АВГУСТ':'Авг','СЕНТЯБРЬ':'Сен','ОКТЯБРЬ':'Окт','НОЯБРЬ':'Ноя','ДЕКАБРЬ':'Дек'};
 const ROLES = ['Продажи','Активации','Продукт','Администраторы','Маркетинг','Маркетплейсы','Разработка','Руководство'];
-const EMP_COLORS = {galya:'#2F6F5E', glafira:'#4E7FA6', lena:'#8A6FA6', sasha:'#B8842E', yana:'#B2555A', anya:'#5E8C4A', milana:'#8C8C82', vasilisa:'#3B5773', anastasia:'#A0785A', ekaterina:'#6E8F8C', marina:'#9B6A3E', alina:'#5A7CA6', pavel:'#7A9B3E', ilya:'#4E6B8E', nikita:'#8E4E6B', veronika:'#C2578C'};
-const ROLE_COLORS = {'Маркетинг':'#C2578C', 'Продажи':'#4E7FA6', 'Активации':'#B8842E', 'Продукт':'#7A5D8A', 'Администраторы':'#9B6A3E', 'Маркетплейсы':'#7A9B3E', 'Разработка':'#4E6B8E', 'Руководство':'#8E4E6B'};
-const WARN_COLOR = '#B8842E', ACCENT_COLOR = '#2F6F5E';
+const EMP_COLORS = {galya:'#655DA6', glafira:'#1FA3BD', lena:'#5E7CE2', sasha:'#D36BFF', yana:'#A94FD4', anya:'#F2408C', milana:'#7C7C8A', vasilisa:'#9B9BE4', anastasia:'#B8B8C8', ekaterina:'#00A9B5', marina:'#3E3880', alina:'#30CBE9', pavel:'#C04BE0', ilya:'#0E7A86', nikita:'#7C7C8A', veronika:'#FF7DB3', diana:'#FB4591', masha:'#8C6BD9', alexey:'#4FB8D6'};
+const ROLE_COLORS = {'Руководство':'#655DA6', 'Продажи':'#1FA3BD', 'Активации':'#D36BFF', 'Продукт':'#9B9BE4', 'Администраторы':'#00A9B5', 'Маркетплейсы':'#A94FD4', 'Разработка':'#5E7CE2', 'Маркетинг':'#F2408C'};
+const WARN_COLOR = '#D36BFF', ACCENT_COLOR = '#655DA6'; // аванс — orchid, ЗП — violet (DESIGN.md)
 
 function parseISO(iso){ const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d); }
 function fmtDate(iso){ const [y,m,d] = iso.split('-').map(Number); return d + ' ' + MONTHS_GEN[m-1]; }

@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WOWlife управленка</title>
-<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]{display:none!important}</style>
+<style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#F5F5F7;color:#0B0B0F}img{max-width:100%}[hidden]{display:none!important}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bitter:wght@600;700&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;700;800;900&family=Onest:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="css/app.css">
 <link rel="stylesheet" href="css/hr.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -51,10 +51,11 @@
 <!-- ===== приложение ===== -->
 <div class="app" id="appRoot" hidden>
   <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark">W</span>
-      <div>
-        <h1>WOWlife управленка</h1>
+    <div class="banner">
+      <div class="wow-letters" aria-hidden="true"><span>WOWOWOWOWOWOWOWOWOWOW</span><span>OWOWOWOWOWOWOWOWOWOW</span><span>WOWOWOWOWOWOWOWOWOWOW</span><span>OWOWOWOWOWOWOWOWOWOW</span></div>
+      <img class="banner-logo" src="assets/logo-white.svg" alt="WOWlife" width="205" height="54">
+      <div class="banner-title">
+        <h1>Управленка</h1>
         <p><span id="userBadge"></span><span id="signOutWrap"> · <button class="link-btn" id="signOutBtn" type="button">выйти</button></span></p>
       </div>
     </div>
@@ -63,6 +64,7 @@
       <button class="tab-btn nav-btn" data-page="org">Оргструктура</button>
       <button class="tab-btn nav-btn" data-page="people">Сотрудники</button>
       <button class="tab-btn nav-btn" data-page="schedule">График</button>
+      <button class="tab-btn nav-btn" data-page="vacations">Отпуска</button>
       <button class="tab-btn nav-btn" data-page="regs">Регламенты</button>
       <button class="tab-btn nav-btn" data-page="procs">Процессы</button>
       <button class="tab-btn nav-btn" data-page="payroll" hidden>Выплаты</button>
@@ -108,6 +110,11 @@
       <h2 class="sec-title">Режим работы остальных сотрудников</h2>
       <p class="help-note">Задаётся в карточке сотрудника в поле «Режим работы».</p>
       <div id="workModes"></div>
+    </section>
+
+    <!-- Отпуска -->
+    <section class="page" data-page="vacations">
+      <div id="vacPage"></div>
     </section>
 
     <!-- Регламенты -->

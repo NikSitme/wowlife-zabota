@@ -59,16 +59,20 @@ export async function loadRole(){
 }
 
 /* ---------- кэш управленки ---------- */
-export const HR = { departments: [], employees: [], regulations: [], processes: [], shifts: [] };
+export const HR = { departments: [], employees: [], regulations: [], processes: [], shifts: [], vacations: [], missing: {} };
 const TABLES = {
   departments: 'departments', employees: 'employees', regulations: 'regulations',
-  processes: 'processes', shifts: 'support_shifts',
+  processes: 'processes', shifts: 'support_shifts', vacations: 'vacations',
 };
-const ORDER = { departments: 'sort', employees: 'full_name', regulations: 'sort', processes: 'sort', shifts: 'day' };
+const ORDER = { departments: 'sort', employees: 'full_name', regulations: 'sort', processes: 'sort', shifts: 'day', vacations: 'start_date' };
+// Таблицы, которые появляются отдельным SQL-скриптом: если её ещё нет, раздел показывает подсказку, а не ломает весь сайт
+const OPTIONAL = new Set(['vacations']);
 
 export async function loadTable(key){
   const { data, error } = await sb.from(TABLES[key]).select('*').order(ORDER[key], { ascending: true }).limit(5000);
+  if (error && OPTIONAL.has(key)){ HR[key] = []; HR.missing[key] = true; return HR[key]; }
   if (error){ console.error(key, error); throw error; }
+  HR.missing[key] = false;
   HR[key] = data || [];
   return HR[key];
 }

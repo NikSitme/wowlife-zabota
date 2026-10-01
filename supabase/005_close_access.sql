@@ -3,7 +3,7 @@
 do $$
 declare t text;
 begin
-  foreach t in array array['departments','employees','regulations','processes','support_shifts','payroll_state'] loop
+  foreach t in array array['departments','employees','regulations','processes','support_shifts','payroll_state','vacations'] loop
     execute format('drop policy if exists "open anon all" on public.%I', t);
   end loop;
 end $$;
