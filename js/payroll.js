@@ -170,8 +170,9 @@ const PRODUCT_DEPT_RULES = {
     avans:30000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:3,  payAmount:50000 },
   marina:    { rows:[{label:'Оклад, руб', value:80000, include:true},{label:'Премия за выполнение плана', value:0, include:true}],
     avans:30000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:1,  payAmount:50000 },
-  alina:     { rows:[{label:'Оклад, руб', value:70000, include:true},{label:'Премия за выполнение плана', value:0, include:true}],
-    avans:20000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:1,  payAmount:50000 },
+  // с сентября 2026 остаток 55 000 (было 50 000), аванс 20 000 без изменений
+  alina:     { rows:[{label:'Оклад, руб', value:75000, include:true},{label:'Премия за выполнение плана', value:0, include:true}],
+    avans:20000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:1,  payAmount:55000 },
   pavel:     { rows:[{label:'% с продаж на маркетплейсах', value:0, include:true}],
     avans:45000,  avansMonthOffset:0, avansDay:20, payMonthOffset:1, payDay:8,  payAmount:0 },
   ilya:      { rows:[{label:'Оклад, руб', value:182000, include:true}],
