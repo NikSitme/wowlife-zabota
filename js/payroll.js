@@ -195,14 +195,19 @@ const PRODUCT_DEPT_RULES = {
 // Отдел заботы: расчёт по KPI ведётся вручную во вкладке «Структура», но даты и аванс известны заранее.
 // Без этого строки появлялись в графике только после «Сохранить в график выплат», и, например, аванс Лены
 // и Ани 1 октября просто отсутствовал. Аванс — в месяце расчёта, остаток — в следующем, сумма остатка 0 до расчёта.
+// Даты — по зарплатному файлу Гали: до октября Галя, Глафира, Саша и Яна получали 25/10 (в октябре 28/13), с ноября весь
+// отдел — аванс 1-го числа месяца расчёта, остаток 15-го следующего. Отпускные вносятся вручную (у всех по-разному).
 const CARE_RULES = {
   galya:   { avans:40000, avansDay:25, payDay:10 },
   glafira: { avans:40000, avansDay:25, payDay:10 },
   sasha:   { avans:30000, avansDay:25, payDay:10 },
-  yana:    { avans:30000, avansDay:25, payDay:10 },
+  yana:    { avans:40000, avansDay:25, payDay:10 }, // аванс 40 000 с октября 2026
   lena:    { avans:40000, avansDay:1,  payDay:15 },
   anya:    { avans:30000, avansDay:1,  payDay:15 },
 };
+const CARE_NEW_DATES_FROM = 'НОЯБРЬ'; // выплаты с этого месяца — аванс 1-го, остаток 15-го
+const careDay = (rule, kind, payMonth) =>
+  RU_MONTHS.indexOf(payMonth) >= RU_MONTHS.indexOf(CARE_NEW_DATES_FROM) ? (kind === 'avans' ? 1 : 15) : (kind === 'avans' ? rule.avansDay : rule.payDay);
 const CARE_FROM = 'СЕНТЯБРЬ';
 function seedCare(s){
   const iso = (label, year, day) => `${year}-${String(RU_MONTHS.indexOf(label)+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
@@ -213,8 +218,8 @@ function seedCare(s){
       const c = s.calc[month][empId];
       if (!c || !employedIn(empId, month, s)) return;
       const next = addMonthsWithinYear(month, year, 1);
-      const avansDate = iso(month, year, rule.avansDay);
-      const payDate = next ? iso(next.label, next.year, rule.payDay) : null;
+      const avansDate = iso(month, year, careDay(rule, 'avans', month));
+      const payDate = next ? iso(next.label, next.year, careDay(rule, 'pay', next.label)) : null;
       const tagged = type => s.schedule.some(it => it.emp === empId && it.type === type && it.sourceCalcMonth === month);
       // даты в расчёте месяца, если пустые или ошибочно взяты из соседнего периода
       if (!c.avansDate || monthLabelForDate(c.avansDate) !== month){ c.avansDate = avansDate; c.avansAmount = c.avansAmount || rule.avans; }
