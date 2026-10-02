@@ -166,9 +166,10 @@ const PRODUCT_DEPT_RULES = {
     avans:100000, avansMonthOffset:1, avansDay:1,  payMonthOffset:1, payDay:15, payAmount:100000 },
   anastasia: { rows:[{label:'Оклад, руб', value:80000, include:true}],
     avans:30000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:3,  payAmount:50000 },
-  // с выплаты 03.10 (за сентябрь) остаток 60 000, с октября аванс 40 000 (было 30 000 + 50 000)
-  ekaterina: { rows:[{label:'Оклад, руб', value:100000, include:true}],
-    avans:40000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:3,  payAmount:60000 },
+  // ДИ от 28.09.2026, п. 5 (действует с 01.09.2026): оклад 90 000 = аванс 40 000 + ЗП 50 000,
+  // плюс бонусы 1 000 ₽ за нового партнёра и 500 ₽ за партнёра, переведённого в ЛК (вписываются по факту)
+  ekaterina: { rows:[{label:'Оклад, руб', value:90000, include:true},{label:'Бонус: новые партнёры (1 000 ₽)', value:0, include:true},{label:'Бонус: партнёры в ЛК (500 ₽)', value:0, include:true}],
+    avans:40000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:3,  payAmount:50000 },
   marina:    { rows:[{label:'Оклад, руб', value:80000, include:true},{label:'Премия за выполнение плана', value:0, include:true}],
     avans:30000,  avansMonthOffset:0, avansDay:15, payMonthOffset:1, payDay:1,  payAmount:50000 },
   // с сентября 2026 остаток 55 000 (было 50 000), аванс 20 000 без изменений
